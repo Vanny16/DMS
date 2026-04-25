@@ -9,7 +9,7 @@
 <!-- jQuery -->
 <script src="{{ asset('backend/plugins/jquery/jquery.min.js') }}"></script>
 <!-- Bootstrap 4 -->
-<script src="{{ asset('backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script> 
+<script src="{{ asset('backend/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- Select2 -->
 <script src="{{ asset('backend/plugins/select2/js/select2.full.min.js') }}"></script>
 <!-- DataTables -->
@@ -64,6 +64,58 @@
       theme: 'bootstrap4'
     })
   });
+</script>
+
+<script>
+$(document).ready(function () {
+
+    const maxSelect = 3;
+
+    $('.approver-select option').on('mousedown', function (e) {
+        e.preventDefault();
+
+        let select = $(this).parent();
+        let selected = select.val() || [];
+        let value = $(this).val();
+
+        if (selected.includes(value)) {
+            // REMOVE if already selected
+            selected = selected.filter(v => v !== value);
+        } else {
+            // ADD if not selected
+            if (selected.length >= maxSelect) {
+                alert('Maximum of 3 approvers only.');
+                return false;
+            }
+            selected.push(value);
+        }
+
+        select.val(selected);
+
+        highlightSelected(select);
+
+        return false;
+    });
+
+    function highlightSelected(selectElement) {
+        let selectedValues = selectElement.val() || [];
+
+        selectElement.find('option').each(function () {
+            if (selectedValues.includes($(this).val())) {
+                $(this).css({
+                    'background-color': '#28a745', // GREEN
+                    'color': '#fff'
+                });
+            } else {
+                $(this).css({
+                    'background-color': '',
+                    'color': ''
+                });
+            }
+        });
+    }
+
+});
 </script>
 
 

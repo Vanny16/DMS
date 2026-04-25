@@ -13,7 +13,7 @@ use App\Http\Controllers\Report2Controller;
 use App\Http\Controllers\reportprintController;
 
 use App\Http\Controllers\ReportCardController;
-
+use App\Http\Controllers\SIPController;
 
 
 /*
@@ -25,6 +25,13 @@ use App\Http\Controllers\ReportCardController;
 Route::get('/', function () {
     return redirect()->route('login.page');
 });
+
+
+Route::get('SIP/main', [SIPController::class, 'main'])->name('sip.main');
+Route::post('SIP/save', [SIPController::class, 'save'])->name('sip.save');
+
+
+
 
 Route::post('/forgot-password', [App\Http\Controllers\LoginController::class, 'forgotPassword'])->name('forgot.password');
 
@@ -89,6 +96,5 @@ Route::get('/api/employees/search', [ReportController::class, 'searchEmployee'])
 Route::get('/report-card', [Report2Controller::class, 'showForm'])->name('report2.form');
 Route::get('/report2/show', [Report2Controller::class, 'showForm'])->name('report2.show');
 
-// ✅ Updated for printing to printreport.blade.php
 Route::get('/report-print/{id}', [ReportController::class, 'print'])->name('reportprint.show');
 

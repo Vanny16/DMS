@@ -39,14 +39,14 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('dtr.index') }}"
-                        class="nav-link {{ request()->routeIs('dtr.index') ? 'active' : '' }}">
+                    <a href="{{ route('sip.main') }}"
+                        class="nav-link {{ request()->routeIs('sip.main') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-clock"></i>
-                        <p>Daily Time Record</p>
+                        <p>S.I.P</p>
                     </a>
                 </li>
 
-                <li
+                {{-- <li
                     class="nav-item has-treeview {{ request()->routeIs('report.showForm', 'report2.form') ? 'menu-open' : '' }}">
                     <a href="#"
                         class="nav-link {{ request()->routeIs('report.showForm', 'report2.form') ? 'active' : '' }}">
@@ -72,7 +72,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
                 @if (session('is_admin') == '1')
                     <li class="nav-header">Manage Members</li>
