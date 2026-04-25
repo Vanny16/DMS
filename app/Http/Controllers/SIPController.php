@@ -28,7 +28,7 @@ class SIPController extends Controller
 
     public function save(Request $request)
 {
-    dd($request->all());
+    // dd($request->all());
     $request->validate([
         'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
         'budget_allocation' => 'required',
@@ -46,8 +46,9 @@ class SIPController extends Controller
             'file_name' => $fileName,
             'budget_allocation' => $request->budget_allocation,
             'status_id' => 1,
+            'completion_tag' => 'n',
+            'delete_flag' => 'n',
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         foreach ($request->approver_ids as $approver_id) {
@@ -55,7 +56,8 @@ class SIPController extends Controller
                 'sip_id' => $sip_id,
                 'user_id' => $approver_id,
                 'created_at' => now(),
-                'updated_at' => now(),
+                'approver_status_id' => 4,
+
             ]);
         }
 
