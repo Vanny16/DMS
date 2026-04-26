@@ -14,6 +14,7 @@ class SIPController extends Controller
 
     $sip_list = DB::table('sips')
         ->join('statuses','statuses.status_id','=','sips.status_id')
+        ->orderBy('sips.created_at', 'desc')
         ->get();
 
     $sip_approvers = DB::table('sip_approvers')
@@ -131,18 +132,58 @@ public function updateAip(Request $request, $id)
         'aip_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
     ]);
 
-    $file = $request->file('aip_file');
-    $fileName = time() . '_AIP_' . $file->getClientOriginalName();
-    $file->move(public_path('uploads/aip'), $fileName);
+    DB::beginTransaction();
 
-    DB::table('sips')
-        ->where('sip_id', $id)
-        ->update([
-            'aip_file' => $fileName,
-            'updated_at' => now(),
-        ]);
+    try {
 
-    return redirect()->back()->with('success', 'Annual Improvement Plan updated successfully.');
+        // upload file
+        $file = $request->file('aip_file');
+        $fileName = time() . '_AIP_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/aip'), $fileName);
+
+        $existing = DB::table('aips')
+            ->where('sip_id', $id)
+            ->where('status_id', 1)
+            ->first();
+
+        if ($existing) {
+
+            // UPDATE
+            DB::table('aips')
+                ->where('sip_id', $id)
+                ->where('status_id', 1)
+                ->update([
+                    'file_name' => $fileName,
+                    'updated_at' => now(),
+                    'user_id' => session('usrUuId'),
+                    'completion_flag' => 'n',
+                    'delete_flag' => 'n',
+                ]);
+
+        } else {
+
+            // INSERT
+            DB::table('aips')->insert([
+                'sip_id' => $id,
+                'file_name' => $fileName,
+                'status_id' => 1,
+                'user_id' => session('usrUuId'),
+                'completion_flag' => 'n',
+                'delete_flag' => 'n',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect()->back()->with('successMessage', 'AIP saved successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return redirect()->back()->with('errorMessage', 'Error: ' . $e->getMessage());
+    }
 }
 
 }
