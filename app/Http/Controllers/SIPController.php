@@ -82,8 +82,12 @@ public function manage($id)
         ->first();
 
     if (!$sip) {
-        return redirect()->route('sip.main')->with('error', 'SIP not found.');
+        return redirect()->route('sip.main')->with('errorMessage', 'SIP not found.');
     }
+
+        $aip = DB::table('aips')
+        ->where('sip_id', $id)
+        ->first();
 
     $approvers = DB::table('sip_approvers')
         ->join('users', 'users.user_id', '=', 'sip_approvers.user_id')
@@ -96,7 +100,7 @@ public function manage($id)
         )
         ->get();
 
-    return view('sip.manage', compact('sip', 'approvers'));
+    return view('sip.manage', compact('sip', 'approvers','aip'));
 }
 
 public function update(Request $request, $id)
