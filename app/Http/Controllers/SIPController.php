@@ -28,16 +28,15 @@ class SIPController extends Controller
 
     public function save(Request $request)
 {
-    // dd($request->all());
-    $request->validate([
-        'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
-        'budget_allocation' => 'required',
-        'approver_ids' => 'required|array|min:1|max:3',
-    ]);
+    // $request->validate([
+    //     'file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+    //     'budget_allocation' => 'required',
+    //     'approver_ids' => 'required|array|min:1|max:3',
+    // ]);
 
-    DB::beginTransaction();
+    // DB::beginTransaction();
 
-    try {
+    // try {
         $file = $request->file('file');
         $fileName = time() . '_' . $file->getClientOriginalName();
         $file->move(public_path('uploads/sip'), $fileName);
@@ -46,9 +45,10 @@ class SIPController extends Controller
             'file_name' => $fileName,
             'budget_allocation' => $request->budget_allocation,
             'status_id' => 1,
-            'completion_tag' => 'n',
+            'completion_flag' => 'n',
             'delete_flag' => 'n',
             'created_at' => now(),
+            'user_id' => session('usrUuId'),
         ]);
 
         foreach ($request->approver_ids as $approver_id) {
@@ -61,15 +61,88 @@ class SIPController extends Controller
             ]);
         }
 
-        DB::commit();
+        // DB::commit();
 
-        return redirect()->back()->with('success', 'SIP created successfully.');
+        return redirect()->back()->with('successMessage', 'SIP created successfully.');
 
-    } catch (\Exception $e) {
-        DB::rollBack();
+    // } catch (\Exception $e) {
+    //     DB::rollBack();
 
-        return redirect()->back()->with('error', 'Failed to create SIP: ' . $e->getMessage());
+    //     return redirect()->back()->with('errorMessage', 'Failed to create SIP: ' . $e->getMessage());
+    // }
+}
+
+public function manage($id)
+{
+    $sip = DB::table('sips')
+        ->join('statuses', 'statuses.status_id', '=', 'sips.status_id')
+        ->where('sips.sip_id', $id)
+        ->select('sips.*', 'statuses.status')
+        ->first();
+
+    if (!$sip) {
+        return redirect()->route('sip.main')->with('error', 'SIP not found.');
     }
+
+    $approvers = DB::table('sip_approvers')
+        ->join('users', 'users.user_id', '=', 'sip_approvers.user_id')
+        ->where('sip_approvers.sip_id', $id)
+        ->select(
+            'sip_approvers.*',
+            'users.first_name',
+            'users.last_name',
+            'users.initial'
+        )
+        ->get();
+
+    return view('sip.manage', compact('sip', 'approvers'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'budget_allocation' => 'required',
+        'file' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+    ]);
+
+    $data = [
+        'budget_allocation' => $request->budget_allocation,
+        'updated_at' => now(),
+    ];
+
+    if ($request->hasFile('file')) {
+        $file = $request->file('file');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('uploads/sip'), $fileName);
+
+        $data['file_name'] = $fileName;
+    }
+
+    DB::table('sips')
+        ->where('sip_id', $id)
+        ->update($data);
+
+    return redirect()->back()->with('success', 'SIP updated successfully.');
+}
+
+public function updateAip(Request $request, $id)
+{
+    $request->validate([
+        'aip_file' => 'required|file|mimes:pdf,doc,docx|max:10240',
+    ]);
+
+    $file = $request->file('aip_file');
+    $fileName = time() . '_AIP_' . $file->getClientOriginalName();
+    $file->move(public_path('uploads/aip'), $fileName);
+
+    DB::table('sips')
+        ->where('sip_id', $id)
+        ->update([
+            'aip_file' => $fileName,
+            'updated_at' => now(),
+        ]);
+
+    return redirect()->back()->with('success', 'Annual Improvement Plan updated successfully.');
 }
 
 }

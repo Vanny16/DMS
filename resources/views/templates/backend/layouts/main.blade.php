@@ -19,6 +19,8 @@
         @include('templates.backend.partials.navbar')
         @include('templates.backend.partials.sidebar')
         <div class="content-wrapper">
+        @include('templates.backend.partials.alerts')
+
             @yield('content')
             <a class="btn btn-primary back-to-top d-print-none" id="back-to-top" role="button" aria-label="Scroll to top" href="#">
                 <i class="fas fa-chevron-up"></i>

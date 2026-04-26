@@ -29,9 +29,9 @@ Route::get('/', function () {
 
 Route::get('SIP/main', [SIPController::class, 'main'])->name('sip.main');
 Route::post('SIP/save', [SIPController::class, 'save'])->name('sip.save');
-
-
-
+Route::get('SIP/manage/{id}', [SIPController::class, 'manage'])->name('sip.manage');
+Route::post('/sip/update/{id}', 'SIPController@update')->name('sip.update');
+Route::post('/sip/aip/update/{id}', 'SIPController@updateAip')->name('sip.aip.update');
 
 Route::post('/forgot-password', [App\Http\Controllers\LoginController::class, 'forgotPassword'])->name('forgot.password');
 

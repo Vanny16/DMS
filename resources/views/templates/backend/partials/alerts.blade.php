@@ -1,4 +1,4 @@
-
+{{--
 
 @if(session('errorMessage'))
 <div class="alert alert-danger alert-dismissible">
@@ -29,4 +29,47 @@
 </div>
 @endif
 
+ --}}
 
+
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    @if(session('successMessage'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: {!! json_encode(session('successMessage')) !!},
+            timer: 2000,
+            showConfirmButton: false
+        });
+    @endif
+
+    @if(session('errorMessage'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: {!! json_encode(session('errorMessage')) !!},
+        });
+    @endif
+
+    @if(session('infoMessage'))
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            text: {!! json_encode(session('infoMessage')) !!},
+        });
+    @endif
+
+    @if(session('warningMessage'))
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning',
+            text: {!! json_encode(session('warningMessage')) !!},
+        });
+    @endif
+
+});
+</script>

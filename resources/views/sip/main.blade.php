@@ -27,8 +27,9 @@
                             <tr>
                                 <th>No.</th>
                                 <th>Title</th>
+                                <th>Budget Allocation</th>
                                 <th>Status</th>
-                                <th>Created At</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -38,6 +39,11 @@
                                     <td>{{ $sip->file_name ?? 'N/A' }}</td>
                                     <td>{{ $sip->budget_allocation ?? 'N/A' }}</td>
                                     <td>{{ $sip->status ?? 'N/A' }}</td>
+                                    <td>
+                                        <a href="{{ route('sip.manage', $sip->sip_id) }}" class="btn btn-info btn-sm">
+                                            Manage
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
