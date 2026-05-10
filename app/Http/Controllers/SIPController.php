@@ -107,6 +107,53 @@ public function manage($id)
     return view('sip.manage', compact('sip', 'approvers','aip','codes'));
 }
 
+public function procurementList($id)
+{
+    $sip = DB::table('sips')
+        ->where('sip_id', $id)
+        ->first();
+
+    $procurements = DB::table('procurements')
+        ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+        ->leftJoin('procurement_components', 'procurement_components.procurement_id', '=', 'procurements.procurement_id')
+        ->where('procurements.sip_id', $id)
+        ->select(
+            'procurements.procurement_id',
+            'procurements.sip_id',
+            'codes.code',
+            'procurement_components.description',
+            'procurements.created_at'
+        )
+        ->orderBy('procurements.procurement_id', 'desc')
+        ->get();
+
+    return view('sip.procurement_list', compact('sip', 'procurements'));
+}
+
+public function procurementItems($procurement_id)
+{
+    $procurement = DB::table('procurements')
+        ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+        ->leftJoin('procurement_components', 'procurement_components.procurement_id', '=', 'procurements.procurement_id')
+        ->where('procurements.procurement_id', $procurement_id)
+        ->select(
+            'procurements.procurement_id',
+            'procurements.sip_id',
+            'codes.code',
+            'procurement_components.procurement_component_id',
+            'procurement_components.description'
+
+        )
+        ->first();
+
+    $items = DB::table('procurement_items')
+        ->where('procurement_component_id', $procurement->procurement_component_id)
+        ->orderBy('procurement_item_id', 'desc')
+        ->get();
+
+    return view('sip.procurement_items', compact('procurement', 'items'));
+}
+
 
 public function storeProcurement(Request $request, $id)
 {
