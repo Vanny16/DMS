@@ -44,6 +44,9 @@ Route::get('/sip/procurement/list/{id}', [SIPController::class, 'procurementList
 Route::post('/sip/procurement-component/{procurement_component_id}/items/store', [SIPController::class, 'storeProcurementItem'])
     ->name('sip.procurement.items.store');
 
+    Route::get('/sip/{sip_id}/procurement/generate/app', [SIPController::class, 'generateAPP'])
+    ->name('sip.procurement.generate.app');
+
 // Other Main pages
 Route::get('/invalid', [MainController::class, 'invalid']);
 Route::get('/image-gallery', [MainController::class, 'imageGallery']);

@@ -296,10 +296,11 @@
                                     <i class="fa fa-plus"></i> Create Procurement
                                 </button>
 
-                                <button type="button" class="btn btn-primary btn-modern" data-toggle="modal"
-                                    data-target="#generateProcurementModal">
-                                    <i class="fa fa-file-text-o"></i> Generate Documents
-                                </button>
+                               <a href="{{ route('sip.procurement.generate.app', $sip->sip_id) }}"
+    target="_blank"
+    class="btn btn-outline-primary btn-modern mb-2">
+    <i class="fa fa-file-pdf-o"></i> Generate APP
+</a>
 
                                 <a href="{{ route('sip.procurement.list', $sip->sip_id) }}"
                                     class="btn btn-info btn-modern">
