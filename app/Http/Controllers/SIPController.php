@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use PDF;
+
 
 class SIPController extends Controller
 {
@@ -162,6 +164,73 @@ public function procurementItems($procurement_id)
         ->get();
 
     return view('sip.procurement_items', compact('procurement', 'items'));
+}
+
+
+public function generateAPP($sip_id)
+{
+    $sip = DB::table('sips')
+        ->where('sip_id', $sip_id)
+        ->first();
+
+    $procurements = DB::table('procurements')
+        ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+
+        ->join(
+            'procurement_components',
+            'procurement_components.procurement_id',
+            '=',
+            'procurements.procurement_id'
+        )
+
+        ->leftJoin(
+            'procurement_items',
+            'procurement_items.procurement_component_id',
+            '=',
+            'procurement_components.procurement_component_id'
+        )
+
+        ->where('procurements.sip_id', $sip_id)
+
+        ->select(
+            'procurements.procurement_id',
+            'codes.code',
+
+            'procurement_components.procurement_component_id',
+            'procurement_components.description',
+
+            'procurement_items.procurement_item_id',
+            'procurement_items.item_name',
+            'procurement_items.unit_of_measure',
+            'procurement_items.amount',
+            'procurement_items.year',
+            'procurement_items.mode_of_procurement'
+        )
+
+        ->orderBy('codes.code', 'asc')
+        ->get();
+
+    $itemIds = $procurements
+        ->pluck('procurement_item_id')
+        ->filter();
+
+    $months = DB::table('procurement_item_months')
+        ->whereIn('procurement_item_id', $itemIds)
+        ->get()
+        ->groupBy('procurement_item_id');
+
+    $pdf = PDF::loadView(
+        'sip.pdf.app',
+        compact(
+            'sip',
+            'procurements',
+            'months'
+        )
+    );
+
+    $pdf->setPaper('legal', 'landscape');
+
+    return $pdf->stream('annual-procurement-plan.pdf');
 }
 
 
