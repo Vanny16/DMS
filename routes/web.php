@@ -34,6 +34,9 @@ Route::post('/sip/update/{id}', 'SIPController@update')->name('sip.update');
 Route::post('/sip/aip/update/{id}', 'SIPController@updateAip')->name('sip.aip.update');
 
 Route::post('/forgot-password', [App\Http\Controllers\LoginController::class, 'forgotPassword'])->name('forgot.password');
+Route::post('/sip/procurement/store/{id}', [SIPController::class, 'storeProcurement'])->name('sip.procurement.store');
+Route::get('/sip/procurement/list/{id}', [SIPController::class, 'procurementList'])
+    ->name('sip.procurement.list');
 
 // Other Main pages
 Route::get('/invalid', [MainController::class, 'invalid']);

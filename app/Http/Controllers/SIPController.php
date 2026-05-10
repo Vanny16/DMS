@@ -100,7 +100,54 @@ public function manage($id)
         )
         ->get();
 
-    return view('sip.manage', compact('sip', 'approvers','aip'));
+        $codes = DB::table('codes')
+        ->leftjoin('sub_categories','sub_categories.sub_category_id','codes.sub_category_id')
+        ->get();
+
+    return view('sip.manage', compact('sip', 'approvers','aip','codes'));
+}
+
+
+public function storeProcurement(Request $request, $id)
+{
+    $request->validate([
+        'code_id' => 'required',
+        'description' => 'required|string',
+    ]);
+    // dd(session('usrUuId'));
+
+    DB::beginTransaction();
+
+    try {
+        $procurementId = DB::table('procurements')->insertGetId([
+            'sip_id'     => $id,
+            'code_id'    => $request->code_id,
+            'created_at' => now(),
+            'user_id'    => session('usrUuId'),
+            'delete_flag'   => 'n'
+
+        ]);
+
+        DB::table('procurement_components')->insert([
+            'procurement_id' => $procurementId,
+            'description'    => $request->description,
+            'created_at'     => now(),
+            'delete_flag'   => 'n'
+        ]);
+
+        DB::commit();
+
+        return redirect()
+            ->back()
+            ->with('successMessage', 'Procurement created successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return redirect()
+            ->back()
+            ->with('errorMessage', 'Failed to create procurement.');
+    }
 }
 
 public function update(Request $request, $id)

@@ -201,21 +201,21 @@
                                     </div>
                                 </div>
 
-                              <div class="form-row">
+                                <div class="form-row">
 
-    <div class="form-group col-md-6">
-        <label>Update SIP File</label>
-        <input type="file" name="file" class="form-control">
-        <small class="text-muted">Optional</small>
-    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Update SIP File</label>
+                                        <input type="file" name="file" class="form-control">
+                                        <small class="text-muted">Optional</small>
+                                    </div>
 
-    <div class="form-group col-md-6">
-        <label>Budget Allocation</label>
-        <input type="text" name="budget_allocation" class="form-control"
-            value="{{ $sip->budget_allocation }}" required>
-    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Budget Allocation</label>
+                                        <input type="text" name="budget_allocation" class="form-control"
+                                            value="{{ $sip->budget_allocation }}" required>
+                                    </div>
 
-</div>
+                                </div>
 
                                 <div class="mt-4">
                                     <button type="submit" class="btn btn-success btn-modern">
@@ -276,6 +276,38 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card sip-card mt-3">
+                        <div class="card-header">
+                            <h5 class="mb-0 font-weight-bold">
+                                <i class="fa fa-shopping-cart text-warning"></i> Manage Procurements
+                            </h5>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="file-preview-box">
+                                <p class="mb-2 font-weight-bold">Procurement Documents</p>
+                                <p class="text-muted mb-3">
+                                    Generate APP, PPMP, and WFP documents related to this SIP.
+                                </p>
+
+                                <button type="button" class="btn btn-success btn-modern" data-toggle="modal"
+                                    data-target="#createProcurementModal">
+                                    <i class="fa fa-plus"></i> Create Procurement
+                                </button>
+
+                                <button type="button" class="btn btn-primary btn-modern" data-toggle="modal"
+                                    data-target="#generateProcurementModal">
+                                    <i class="fa fa-file-text-o"></i> Generate Documents
+                                </button>
+
+                                <a href="{{ route('sip.procurement.list', $sip->sip_id) }}"
+                                    class="btn btn-info btn-modern">
+                                    <i class="fa fa-list"></i> Procurement List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-4">
@@ -330,4 +362,65 @@
 
         </div>
     </section>
+
+
+
+    <div class="modal fade" id="createProcurementModal" tabindex="-1" role="dialog"
+        aria-labelledby="createProcurementModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog modal-lg" role="document">
+            <form method="POST" action="{{ route('sip.procurement.store', $sip->sip_id) }}">
+                @csrf
+
+                <div class="modal-content" style="border-radius: 18px; overflow: hidden;">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title font-weight-bold" id="createProcurementModalLabel">
+                            <i class="fa fa-plus-circle"></i> Create Procurement
+                        </h5>
+
+                        <button type="button" class="close text-white" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label>Code</label>
+                            <select name="code_id" class="form-control" required>
+                                <option value="">-- Select Code --</option>
+
+                                @foreach ($codes as $code)
+                                    <option value="{{ $code->code_id }}">
+                                        @if (isset($code->sub_category))
+                                            {{ $code->code }} - {{ $code->sub_category }}
+                                        @else
+                                            {{ $code->code }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Enter procurement description..."
+                                required></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-modern" data-dismiss="modal">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-success btn-modern">
+                            <i class="fa fa-save"></i> Save Procurement
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
