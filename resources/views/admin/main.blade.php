@@ -1,134 +1,220 @@
 @extends('templates.backend.layouts.main')
+
 @section('content')
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Home</h1>
-            </div>
-        </div>
-    </div>
-</div>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d6efd, #20c997);
+        border-radius: 20px;
+        padding: 28px;
+        color: #fff;
+        margin-bottom: 22px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    }
+
+    .summary-card {
+        border: none;
+        border-radius: 20px;
+        padding: 22px;
+        color: #fff;
+        box-shadow: 0 10px 25px rgba(0,0,0,.10);
+        min-height: 140px;
+    }
+
+    .summary-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .summary-title {
+        font-size: 13px;
+        opacity: .9;
+        margin-top: 15px;
+        margin-bottom: 4px;
+    }
+
+    .summary-value {
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .bg-blue-gradient {
+        background: linear-gradient(135deg, #0d6efd, #2563eb);
+    }
+
+    .bg-green-gradient {
+        background: linear-gradient(135deg, #20c997, #059669);
+    }
+
+    .bg-orange-gradient {
+        background: linear-gradient(135deg, #f59e0b, #f97316);
+    }
+
+    .bg-purple-gradient {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        overflow: hidden;
+    }
+
+    .dashboard-card .card-header {
+        background: #fff;
+        border-bottom: 1px solid #eef0f3;
+        padding: 18px 22px;
+    }
+</style>
 
 <section class="content">
     <div class="container-fluid">
+
+        <div class="dashboard-header">
+            <h2 class="font-weight-bold mb-1">DMS Dashboard</h2>
+            <p class="mb-0">Procurement document monitoring, analytics, and summary overview.</p>
+        </div>
+
         <div class="row">
-            <div class="col-md-3">
-                <div class="small-box bg-info">
-                    <div class="inner">
-                        <h3></h3>
-                        <p>TOTAL MEMBERS</p>
+
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="summary-card bg-blue-gradient">
+                    <div class="summary-icon">
+                        <i class="fas fa-folder-open"></i>
                     </div>
-                    <div class="icon">
-                        <i class="fa fa-users"></i>
-                    </div>
-                    <a href="{{ action('AdminController@members') }}" class="small-box-footer">Registered members <i class="fas fa-arrow-circle-right"></i></a>
+                    <div class="summary-title">Total SIP Documents</div>
+                    <div class="summary-value">{{ number_format($totalSip) }}</div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-warning">
-                    <div class="inner">
-                        <h3></h3>
-                        <p>MEMBERS IN GOOD STANDING</p>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="summary-card bg-green-gradient">
+                    <div class="summary-icon">
+                        <i class="fas fa-shopping-cart"></i>
                     </div>
-                    <div class="icon">
-                        <i class="fa fa-thumbs-up"></i>
-                    </div>
-                    <a href="{{ action('AdminController@migs') }}" class="small-box-footer">Members who can vote <i class="fas fa-arrow-circle-right"></i></a>
+                    <div class="summary-title">Total Procurements</div>
+                    <div class="summary-value">{{ number_format($totalProcurements) }}</div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-success">
-                    <div class="inner">
-                        <h3></h3>
-                        <p>NOMINATED</p>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="summary-card bg-orange-gradient">
+                    <div class="summary-icon">
+                        <i class="fas fa-boxes"></i>
                     </div>
-                    <div class="icon">
-                        <i class="fa fa-star-half"></i>
-                    </div>
-                    <a href="{{ action('AdminController@nominated') }}" class="small-box-footer">Members who have already nominated <i class="fas fa-arrow-circle-right"></i></a>
+                    <div class="summary-title">Total Procurement Items</div>
+                    <div class="summary-value">{{ number_format($totalItems) }}</div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="small-box bg-purple">
-                    <div class="inner">
-                        <h3></h3>
-                        <p>VOTED</p>
+            <div class="col-lg-3 col-md-6 mb-3">
+                <div class="summary-card bg-purple-gradient">
+                    <div class="summary-icon">
+                        <i class="fas fa-coins"></i>
                     </div>
-                    <div class="icon">
-                        <i class="fa fa-star"></i>
-                    </div>
-                    <a href="{{ action('AdminController@voted') }}" class="small-box-footer">Members who have already voted <i class="fas fa-arrow-circle-right"></i></a>
+                    <div class="summary-title">Total Estimated Amount</div>
+                    <div class="summary-value">₱{{ number_format($totalAmount, 2) }}</div>
                 </div>
             </div>
+
         </div>
 
-        <hr />
+        <div class="row">
 
-        <div class="card-body">
-            <h4>Election Process Results</h4>
-            <ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="custom-content-below-home-tab" data-bs-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Nominations</a>
-                </li>
-                @if(session('is_admin') == '1')
-                    <li class="nav-item">
-                        <a class="nav-link" id="custom-content-below-profile-tab" data-bs-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Election - Board of Trustees</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="custom-content-below-profile2-tab" data-bs-toggle="pill" href="#custom-content-below-profile2" role="tab" aria-controls="custom-content-below-profile2" aria-selected="false">Election - Zone Representative</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="custom-content-below-messages-tab" data-bs-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Election - Officers</a>
-                    </li>
-                @endif
-            </ul>
+            <div class="col-lg-7 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-chart-bar text-primary"></i> Quarterly Procurement Allocation
+                        </h5>
+                    </div>
 
-            <div class="tab-content" id="custom-content-below-tabContent">
-                <div class="tab-pane fade show active" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">
-                    <br/>
-
-                    @php
-                        $zoneList = [
-                            'Board of Trustees',
-                            'Zone Representative - Davao City',
-                            'Zone Representative - Davao Oriental',
-                            'Zone Representative - Davao del Norte',
-                            'Zone Representative - Davao de Oro'
-                        ];
-                    @endphp
-
-                    @foreach ($zoneList as $zone)
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card card-secondary">
-                                    <div class="card-header">
-                                        Nominated Members ({{ $zone }})
-                                    </div>
-                                    <div class="card-body">
-                                        <table style="width:100%" class="table table-hover table-striped table-sm">
-                                            <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>Sector</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {{-- Nomination data goes here --}}
-                                            </tbody>
-                                        </table> 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-
+                    <div class="card-body">
+                        <canvas id="quarterChart" height="120"></canvas>
+                    </div>
                 </div>
             </div>
+
+            <div class="col-lg-5 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-clock text-success"></i> Recent Procurements
+                        </h5>
+                    </div>
+
+                    <div class="card-body table-responsive">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @forelse($recentProcurements as $procurement)
+                                    <tr>
+                                        <td>{{ $procurement->code }}</td>
+                                        <td>{{ $procurement->description }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($procurement->created_at)->format('M d, Y') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            No recent procurement found.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('quarterChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+            datasets: [{
+                label: 'Allocation Amount',
+                data: [
+                    {{ $quarterAmounts['Q1'] }},
+                    {{ $quarterAmounts['Q2'] }},
+                    {{ $quarterAmounts['Q3'] }},
+                    {{ $quarterAmounts['Q4'] }}
+                ],
+                borderWidth: 1,
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
 @endsection

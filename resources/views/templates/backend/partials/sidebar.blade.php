@@ -124,7 +124,7 @@
                     <a href="{{ action('AdminController@main') }}"
                         class="nav-link {{ request()->routeIs('admin.main') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-home"></i>
-                        <p>Home</p>
+                        <p>Dashboard</p>
                     </a>
                 </li>
 
