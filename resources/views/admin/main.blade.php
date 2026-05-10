@@ -40,7 +40,7 @@
     }
 
     .summary-value {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: 800;
     }
 
@@ -71,6 +71,52 @@
         background: #fff;
         border-bottom: 1px solid #eef0f3;
         padding: 18px 22px;
+    }
+
+    .quick-action-btn {
+        border-radius: 16px;
+        padding: 16px;
+        font-weight: 700;
+        display: block;
+        text-align: center;
+        transition: .2s ease;
+        margin-bottom: 12px;
+    }
+
+    .quick-action-btn:hover {
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .progress {
+        height: 18px;
+        border-radius: 20px;
+        background: #eef2f7;
+    }
+
+    .progress-bar {
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .mini-stat {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 15px;
+        border: 1px solid #eef0f3;
+    }
+
+    .mini-stat-title {
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+
+    .mini-stat-value {
+        font-size: 18px;
+        font-weight: 800;
+        color: #111827;
     }
 </style>
 
@@ -128,7 +174,7 @@
 
         <div class="row">
 
-            <div class="col-lg-7 mb-3">
+            <div class="col-lg-8 mb-3">
                 <div class="card dashboard-card">
                     <div class="card-header">
                         <h5 class="mb-0 font-weight-bold">
@@ -137,12 +183,107 @@
                     </div>
 
                     <div class="card-body">
-                        <canvas id="quarterChart" height="120"></canvas>
+                        <canvas id="quarterChart" height="110"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-bolt text-warning"></i> Quick Actions
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <a href="{{ route('sip.main') }}" class="quick-action-btn bg-primary text-white">
+                            <i class="fas fa-folder-open"></i> Manage SIP
+                        </a>
+
+                        <a href="{{ route('sip.main') }}" class="quick-action-btn bg-success text-white">
+                            <i class="fas fa-plus-circle"></i> Create Procurement
+                        </a>
+
+                        <a href="{{ route('sip.main') }}" class="quick-action-btn bg-info text-white">
+                            <i class="fas fa-file-pdf"></i> Generate Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-7 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-chart-line text-success"></i> Monthly Procurement Trend
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <canvas id="monthlyChart" height="120"></canvas>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-5 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-chart-pie text-info"></i> Procurement Category Distribution
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <canvas id="categoryChart" height="170"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-4 mb-3">
+                <div class="card dashboard-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 font-weight-bold">
+                            <i class="fas fa-percentage text-primary"></i> Budget Utilization
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        @php
+                            $budgetAllocation = $budgetAllocation ?? 0;
+                            $usedAmount = $totalAmount ?? 0;
+                            $utilization = $budgetAllocation > 0 ? ($usedAmount / $budgetAllocation) * 100 : 0;
+                            $utilization = $utilization > 100 ? 100 : $utilization;
+                        @endphp
+
+                        <div class="mini-stat mb-3">
+                            <div class="mini-stat-title">Allocated Budget</div>
+                            <div class="mini-stat-value">₱{{ number_format($budgetAllocation, 2) }}</div>
+                        </div>
+
+                        <div class="mini-stat mb-3">
+                            <div class="mini-stat-title">Used Amount</div>
+                            <div class="mini-stat-value">₱{{ number_format($usedAmount, 2) }}</div>
+                        </div>
+
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: {{ $utilization }}%;">
+                                {{ number_format($utilization, 0) }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-3">
                 <div class="card dashboard-card">
                     <div class="card-header">
                         <h5 class="mb-0 font-weight-bold">
@@ -163,7 +304,11 @@
                             <tbody>
                                 @forelse($recentProcurements as $procurement)
                                     <tr>
-                                        <td>{{ $procurement->code }}</td>
+                                        <td>
+                                            <span class="badge badge-primary">
+                                                {{ $procurement->code }}
+                                            </span>
+                                        </td>
                                         <td>{{ $procurement->description }}</td>
                                         <td>{{ \Carbon\Carbon::parse($procurement->created_at)->format('M d, Y') }}</td>
                                     </tr>
@@ -188,19 +333,19 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const ctx = document.getElementById('quarterChart');
+    const quarterCtx = document.getElementById('quarterChart');
 
-    new Chart(ctx, {
+    new Chart(quarterCtx, {
         type: 'bar',
         data: {
             labels: ['Q1', 'Q2', 'Q3', 'Q4'],
             datasets: [{
                 label: 'Allocation Amount',
                 data: [
-                    {{ $quarterAmounts['Q1'] }},
-                    {{ $quarterAmounts['Q2'] }},
-                    {{ $quarterAmounts['Q3'] }},
-                    {{ $quarterAmounts['Q4'] }}
+                    {{ $quarterAmounts['Q1'] ?? 0 }},
+                    {{ $quarterAmounts['Q2'] ?? 0 }},
+                    {{ $quarterAmounts['Q3'] ?? 0 }},
+                    {{ $quarterAmounts['Q4'] ?? 0 }}
                 ],
                 borderWidth: 1,
                 borderRadius: 10
@@ -213,6 +358,59 @@
                     beginAtZero: true
                 }
             }
+        }
+    });
+
+    const monthlyCtx = document.getElementById('monthlyChart');
+
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'Monthly Amount',
+                data: [
+                    {{ $monthlyAmounts[1] ?? 0 }},
+                    {{ $monthlyAmounts[2] ?? 0 }},
+                    {{ $monthlyAmounts[3] ?? 0 }},
+                    {{ $monthlyAmounts[4] ?? 0 }},
+                    {{ $monthlyAmounts[5] ?? 0 }},
+                    {{ $monthlyAmounts[6] ?? 0 }},
+                    {{ $monthlyAmounts[7] ?? 0 }},
+                    {{ $monthlyAmounts[8] ?? 0 }},
+                    {{ $monthlyAmounts[9] ?? 0 }},
+                    {{ $monthlyAmounts[10] ?? 0 }},
+                    {{ $monthlyAmounts[11] ?? 0 }},
+                    {{ $monthlyAmounts[12] ?? 0 }}
+                ],
+                borderWidth: 3,
+                tension: .35,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const categoryCtx = document.getElementById('categoryChart');
+
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {!! json_encode($categoryLabels ?? []) !!},
+            datasets: [{
+                data: {!! json_encode($categoryAmounts ?? []) !!},
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
         }
     });
 </script>
