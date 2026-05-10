@@ -116,11 +116,22 @@ public function procurementList($id)
     $procurements = DB::table('procurements')
         ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
         ->leftJoin('procurement_components', 'procurement_components.procurement_id', '=', 'procurements.procurement_id')
+        ->leftJoin('procurement_items', 'procurement_items.procurement_component_id', '=', 'procurement_components.procurement_component_id')
         ->where('procurements.sip_id', $id)
         ->select(
             'procurements.procurement_id',
             'procurements.sip_id',
             'codes.code',
+            'procurement_components.procurement_component_id',
+            'procurement_components.description',
+            'procurements.created_at',
+            DB::raw('COALESCE(SUM(procurement_items.amount), 0) as total_amount')
+        )
+        ->groupBy(
+            'procurements.procurement_id',
+            'procurements.sip_id',
+            'codes.code',
+            'procurement_components.procurement_component_id',
             'procurement_components.description',
             'procurements.created_at'
         )
@@ -129,7 +140,6 @@ public function procurementList($id)
 
     return view('sip.procurement_list', compact('sip', 'procurements'));
 }
-
 public function procurementItems($procurement_id)
 {
     $procurement = DB::table('procurements')
@@ -154,6 +164,72 @@ public function procurementItems($procurement_id)
     return view('sip.procurement_items', compact('procurement', 'items'));
 }
 
+
+public function storeProcurementItem(Request $request, $procurement_component_id)
+{
+    $request->validate([
+        'item_name' => 'required|string',
+        'mode_of_procurement' => 'required|string',
+        'amount' => 'required|numeric',
+        'unit_of_measure' => 'required|string',
+        'year' => 'required',
+        'months' => 'required|array',
+        'quantities' => 'required|array',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $itemId = DB::table('procurement_items')->insertGetId([
+            'procurement_component_id' => $procurement_component_id,
+            'item_name' => $request->item_name,
+            'mode_of_procurement' => $request->mode_of_procurement,
+            'amount' => $request->amount,
+            'unit_of_measure' => $request->unit_of_measure,
+            'year' => $request->year,
+            'delete_flag' => 0,
+            'created_at' => now(),
+        ]);
+
+        $monthMap = [
+            'January' => 1,
+            'February' => 2,
+            'March' => 3,
+            'April' => 4,
+            'May' => 5,
+            'June' => 6,
+            'July' => 7,
+            'August' => 8,
+            'September' => 9,
+            'October' => 10,
+            'November' => 11,
+            'December' => 12,
+        ];
+
+        foreach ($request->months as $monthName) {
+            DB::table('procurement_item_months')->insert([
+                'procurement_item_id' => $itemId,
+                'month_id' => $monthMap[$monthName],
+                'month' => $monthName,
+                'quantity' => $request->quantities[$monthName] ?? 0,
+                'created_at' => now(),
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect()
+            ->back()
+            ->with('success', 'Procurement item saved successfully.');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return redirect()
+            ->back()
+            ->with('error', 'Failed to save procurement item.');
+    }
+}
 
 public function storeProcurement(Request $request, $id)
 {

@@ -48,7 +48,9 @@
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $procurement->code }}</td>
                                     <td>{{ $procurement->description }}</td>
-                                    <td>--</td>
+                                    <td class="text-center">
+                                        {{ number_format($procurement->total_amount, 2) }}
+                                    </td>
 
                                     <td>{{ \Carbon\Carbon::parse($procurement->created_at)->format('M d, Y') }}</td>
                                     <td>
