@@ -14,7 +14,7 @@ use App\Http\Controllers\reportprintController;
 
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\SIPController;
-
+use App\Http\Controllers\ManageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,14 +59,6 @@ Route::post('/login', [LoginController::class, 'validateUser']);
 // After successful login, redirect to Admin Dashboard
 Route::get('/admin/main', [AdminController::class, 'main'])->name('admin.main');
 
-// Election routes
-Route::get('/election/nominate', [ElectionController::class, 'nominate']);
-Route::post('/election/nominate-submit', [ElectionController::class, 'nominateSubmit']);
-Route::get('/election/elect', [ElectionController::class, 'elect']);
-Route::post('/election/elect-submit', [ElectionController::class, 'electSubmit']);
-Route::get('/election/elect2', [ElectionController::class, 'elect2']);
-Route::post('/election/elect2-submit', [ElectionController::class, 'elect2Submit']);
-Route::post('/election/decline', [ElectionController::class, 'declineNomination']);
 
 // Admin panel routes
 Route::get('/admin/main', [AdminController::class, 'main']);
@@ -109,4 +101,12 @@ Route::get('/report-card', [Report2Controller::class, 'showForm'])->name('report
 Route::get('/report2/show', [Report2Controller::class, 'showForm'])->name('report2.show');
 
 Route::get('/report-print/{id}', [ReportController::class, 'print'])->name('reportprint.show');
+
+//manage
+Route::get('/manage/users/main', [ManageController::class, 'users'])->name('manage_users.main');
+Route::post('/manage-users/save', [ManageController::class, 'save_users'])->name('manage-users.save');
+
+
+Route::get('/manage/schools', [ManageController::class, 'schools'])->name('manage_schools.main');
+
 

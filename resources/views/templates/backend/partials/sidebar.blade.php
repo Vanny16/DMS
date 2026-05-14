@@ -115,81 +115,80 @@
             </div>
         </div>
 
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+     <nav class="mt-2">
+    <ul class="nav nav-pills nav-sidebar flex-column"
+        data-widget="treeview"
+        role="menu"
+        data-accordion="false">
 
-                <li class="nav-header">Main Menu</li>
+        {{-- MAIN MENU --}}
+        <li class="nav-header">Main Menu</li>
 
+        {{-- Dashboard --}}
+        <li class="nav-item">
+            <a href="{{ action('AdminController@main') }}"
+               class="nav-link {{ request()->routeIs('admin.main') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-home"></i>
+                <p>Dashboard</p>
+            </a>
+        </li>
+
+        {{-- S.I.P --}}
+        <li class="nav-item">
+            <a href="{{ route('sip.main') }}"
+               class="nav-link {{ request()->routeIs('sip.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-folder-open"></i>
+                <p>S.I.P</p>
+            </a>
+        </li>
+
+        {{-- MANAGER WITH SUB MENU --}}
+        <li class="nav-item has-treeview
+            {{ request()->routeIs('manage-users.*') || request()->routeIs('manage-schools.*') ? 'menu-open' : '' }}">
+
+            <a href="#"
+               class="nav-link
+               {{ request()->routeIs('manage-users.*') || request()->routeIs('manage-schools.*') ? 'active' : '' }}">
+
+                <i class="nav-icon fas fa-user-cog"></i>
+
+                <p>
+                    Manager
+                    <i class="right fas fa-angle-left"></i>
+                </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+
+                {{-- Users --}}
                 <li class="nav-item">
-                    <a href="{{ action('AdminController@main') }}"
-                        class="nav-link {{ request()->routeIs('admin.main') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-home"></i>
-                        <p>Dashboard</p>
+                    <a href="{{ route('manage_users.main') }}"
+                       class="nav-link {{ request()->routeIs('manage/users/*') ? 'active' : '' }}">
+
+                        <i class="far fa-user nav-icon"></i>
+
+                        <p>Users</p>
                     </a>
                 </li>
 
+                {{-- Schools --}}
                 <li class="nav-item">
-                    <a href="{{ route('sip.main') }}"
-                        class="nav-link {{ request()->routeIs('sip.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-folder-open"></i>
-                        <p>S.I.P</p>
+                    <a href="{{ route('manage_schools.main') }}"
+                       class="nav-link {{ request()->routeIs('manage/schools/*') ? 'active' : '' }}">
+
+                        <i class="fas fa-school nav-icon"></i>
+
+                        <p>Schools</p>
                     </a>
                 </li>
-
-                @if (session('is_admin') == '1')
-                    <li class="nav-header">Manage Members</li>
-
-                    <li class="nav-item">
-                        <a href="{{ action('MemberController@list') }}" class="nav-link">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Existing Members</p>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a href="{{ action('MemberController@approval') }}" class="nav-link d-flex align-items-center">
-                            <i class="nav-icon fas fa-user-plus"></i>
-                            <p class="mb-0">For Approval</p>
-
-                            @if (get_approval_count() > 0)
-                                <span class="badge badge-warning sidebar-badge">
-                                    {{ get_approval_count() }}
-                                </span>
-                            @endif
-                        </a>
-                    </li>
-                @else
-                    @if (session('mem_is_good_standing') == '1')
-                        <li class="nav-header">PIEP Election</li>
-
-                        <li class="nav-item">
-                            <a href="{{ action('ElectionController@nominate') }}" class="nav-link">
-                                <i class="nav-icon fa fa-tasks"></i>
-                                <p>Nominate</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="{{ action('ElectionController@elect') }}" class="nav-link">
-                                <i class="nav-icon fa fa-vote-yea"></i>
-                                <p>Vote Board Members</p>
-                            </a>
-                        </li>
-
-                        @if (is_board_member() == true)
-                            <li class="nav-item">
-                                <a href="{{ action('ElectionController@elect2') }}" class="nav-link">
-                                    <i class="nav-icon fa fa-user-tie"></i>
-                                    <p>Vote Officers</p>
-                                </a>
-                            </li>
-                        @endif
-                    @endif
-                @endif
-
-                <li class="nav-header">Quick Links</li>
 
             </ul>
-        </nav>
+        </li>
+
+        {{-- QUICK LINKS --}}
+        <li class="nav-header">Quick Links</li>
+
+    </ul>
+</nav>
     </div>
 </aside>
