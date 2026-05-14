@@ -143,47 +143,49 @@
         </li>
 
         {{-- MANAGER WITH SUB MENU --}}
-        <li class="nav-item has-treeview
-            {{ request()->routeIs('manage-users.*') || request()->routeIs('manage-schools.*') ? 'menu-open' : '' }}">
+    @php
+        $manageActive =
+            request()->routeIs('manage_users.*') ||
+            request()->routeIs('manage_schools.*');
+    @endphp
 
-            <a href="#"
-               class="nav-link
-               {{ request()->routeIs('manage-users.*') || request()->routeIs('manage-schools.*') ? 'active' : '' }}">
+    <li class="nav-item has-treeview {{ $manageActive ? 'menu-open' : '' }}">
 
-                <i class="nav-icon fas fa-user-cog"></i>
+        <a href="#"
+        class="nav-link">
 
-                <p>
-                    Manager
-                    <i class="right fas fa-angle-left"></i>
-                </p>
-            </a>
+            <i class="nav-icon fas fa-user-cog"></i>
 
-            <ul class="nav nav-treeview">
+            <p>
+                Manage
+                <i class="right fas fa-angle-left"></i>
+            </p>
+        </a>
 
-                {{-- Users --}}
-                <li class="nav-item">
-                    <a href="{{ route('manage_users.main') }}"
-                       class="nav-link {{ request()->routeIs('manage/users/*') ? 'active' : '' }}">
+        <ul class="nav nav-treeview">
 
-                        <i class="far fa-user nav-icon"></i>
+            {{-- Users --}}
+            <li class="nav-item">
+                <a href="{{ route('manage_users.main') }}"
+                class="nav-link {{ request()->routeIs('manage_users.*') ? 'active' : '' }}">
 
-                        <p>Users</p>
-                    </a>
-                </li>
+                    <i class="far fa-user nav-icon"></i>
+                    <p>Users</p>
+                </a>
+            </li>
 
-                {{-- Schools --}}
-                <li class="nav-item">
-                    <a href="{{ route('manage_schools.main') }}"
-                       class="nav-link {{ request()->routeIs('manage/schools/*') ? 'active' : '' }}">
+            {{-- Schools --}}
+            <li class="nav-item">
+                <a href="{{ route('manage_schools.main') }}"
+                class="nav-link {{ request()->routeIs('manage_schools.*') ? 'active' : '' }}">
 
-                        <i class="fas fa-school nav-icon"></i>
+                    <i class="fas fa-school nav-icon"></i>
+                    <p>Schools</p>
+                </a>
+            </li>
 
-                        <p>Schools</p>
-                    </a>
-                </li>
-
-            </ul>
-        </li>
+        </ul>
+    </li>
 
         {{-- QUICK LINKS --}}
         <li class="nav-header">Quick Links</li>

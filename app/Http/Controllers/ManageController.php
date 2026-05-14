@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Str;
 
 class ManageController extends Controller
 {
@@ -28,7 +29,7 @@ class ManageController extends Controller
         ));
     }
 
-    public function save_users(Request $request)
+    public function save_user(Request $request)
 {
     $request->validate([
         'first_name'     => 'required',
@@ -40,6 +41,7 @@ class ManageController extends Controller
     ]);
 
     DB::table('users')->insert([
+        'user_id'      => (string) Str::uuid(),
 
         'first_name'   => $request->first_name,
         'last_name'    => $request->last_name,
@@ -55,6 +57,8 @@ class ManageController extends Controller
         'active_flag'  => 'y',
 
         'created_at'   => now(),
+        'created_by'   => session('usrUuId'),
+
     ]);
 
     return redirect()
@@ -64,14 +68,33 @@ class ManageController extends Controller
 
     public function schools()
     {
-        $users = DB::table('schools')
-        ->get();
+        $schools = DB::table('schools')
+            ->where('delete_flag', 'n')
+            ->get();
 
-        return view('manage.schools.main', compact(
-            'users'
-        ));
+        return view('manage.schools.main', compact('schools'));
     }
 
+    public function save_school(Request $request)
+    {
+        $request->validate([
+            'school_name' => 'required',
+        ]);
+
+       DB::table('schools')->insert([
+            'beis_school_no' => $request->beis_school_no,
+            'school_name'    => $request->school_name,
+            'region'         => $request->region,
+            'division_id'    => $request->division_id,
+            'district_id'    => $request->district_id,
+            'active_flag'    => 'y',
+            'created_at'     => now(),
+            'created_by'     => session('usrUuId'),
+
+        ]);
+
+        return redirect()->back()->with('success', 'School added successfully.');
+    }
 
     public function migs()
     {

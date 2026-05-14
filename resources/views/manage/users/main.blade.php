@@ -232,7 +232,7 @@
 
             <div class="modal-content">
 
-                <form method="POST" action="{{ route('manage-users.save') }}">
+                <form method="POST" action="{{ route('manage_users.save') }}">
 
                 @csrf
 

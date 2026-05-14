@@ -104,9 +104,10 @@ Route::get('/report-print/{id}', [ReportController::class, 'print'])->name('repo
 
 //manage
 Route::get('/manage/users/main', [ManageController::class, 'users'])->name('manage_users.main');
-Route::post('/manage-users/save', [ManageController::class, 'save_users'])->name('manage-users.save');
+Route::post('/manage/users/manage_users/save', [ManageController::class, 'save_user'])->name('manage_users.save');
 
 
-Route::get('/manage/schools', [ManageController::class, 'schools'])->name('manage_schools.main');
+Route::get('/manage/schools/manage_schools', [ManageController::class, 'schools'])->name('manage_schools.main');
 
+Route::post('/manage/schools/manage_schools/save', [ManageController::class, 'save_school'])->name('manage_schools.save');
 
