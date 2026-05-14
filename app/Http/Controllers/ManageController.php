@@ -24,47 +24,53 @@ class ManageController extends Controller
         ->where('delete_flag', 'n')
         ->get();
 
+          $schools = DB::table('schools')
+            ->where('delete_flag', 'n')
+        ->get();
+
         return view('manage.users.main', compact(
-            'users','positions','user_types'
+            'users','positions','user_types','schools'
         ));
     }
 
     public function save_user(Request $request)
-{
-    $request->validate([
-        'first_name'     => 'required',
-        'last_name'      => 'required',
-        'email'          => 'required|email|unique:users,email',
-        'position_id'    => 'required',
-        'user_type_id'   => 'required',
-        'password'       => 'required|min:6|same:password_confirmation',
-    ]);
+    {
+        $request->validate([
+            'first_name'     => 'required',
+            'last_name'      => 'required',
+            'email'          => 'required|email|unique:users,email',
+            'position_id'    => 'required',
+            'user_type_id'   => 'required',
+            'school_id'      => 'required',
+            'password'       => 'required|min:6|same:password_confirmation',
+        ]);
 
-    DB::table('users')->insert([
-        'user_id'      => (string) Str::uuid(),
+        DB::table('users')->insert([
+            'user_id'      => (string) Str::uuid(),
 
-        'first_name'   => $request->first_name,
-        'last_name'    => $request->last_name,
-        'initial'      => $request->initial,
+            'first_name'   => $request->first_name,
+            'last_name'    => $request->last_name,
+            'initial'      => $request->initial,
 
-        'email'        => $request->email,
+            'email'        => $request->email,
 
-        'position_id'  => $request->position_id,
-        'user_type_id' => $request->user_type_id,
+            'position_id'  => $request->position_id,
+            'user_type_id' => $request->user_type_id,
+            'school_id' => $request->school_id,
 
-        'password'     => md5($request->password),
+            'password'     => md5($request->password),
 
-        'active_flag'  => 'y',
+            'active_flag'  => 'y',
 
-        'created_at'   => now(),
-        'created_by'   => session('usrUuId'),
+            'created_at'   => now(),
+            'created_by'   => session('usrUuId'),
 
-    ]);
+        ]);
 
-    return redirect()
-        ->back()
-        ->with('success', 'User successfully created.');
-}
+        return redirect()
+            ->back()
+            ->with('success', 'User successfully created.');
+    }
 
     public function schools()
     {

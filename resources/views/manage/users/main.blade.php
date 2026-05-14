@@ -356,6 +356,24 @@
                             </div>
                         </div>
 
+                        <div class="col-md-6">
+                             <div class="form-group">
+                                <label>Select user type</label>
+
+                                <select name="school_id" class="form-control" required>
+
+                                    <option value="">-- Select School --</option>
+
+                                    @foreach ($schools as $school)
+                                        <option value="{{ $school->school_id }}">
+                                            {{ $school->school_name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+                        </div>
+
 
                     </div>
 
