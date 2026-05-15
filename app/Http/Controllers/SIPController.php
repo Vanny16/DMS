@@ -93,12 +93,14 @@ public function manage($id)
 
     $approvers = DB::table('sip_approvers')
         ->join('users', 'users.user_id', '=', 'sip_approvers.user_id')
+        ->join('positions', 'positions.position_id', '=', 'users.position_id')
         ->where('sip_approvers.sip_id', $id)
         ->select(
             'sip_approvers.*',
             'users.first_name',
             'users.last_name',
-            'users.initial'
+            'users.initial',
+            'positions.position'
         )
         ->get();
 
@@ -106,7 +108,30 @@ public function manage($id)
         ->leftjoin('sub_categories','sub_categories.sub_category_id','codes.sub_category_id')
         ->get();
 
-    return view('sip.manage', compact('sip', 'approvers','aip','codes'));
+    $usedBudget = DB::table('procurements')
+        ->join(
+            'procurement_components',
+            'procurement_components.procurement_id',
+            '=',
+            'procurements.procurement_id'
+        )
+        ->join(
+            'procurement_items',
+            'procurement_items.procurement_component_id',
+            '=',
+            'procurement_components.procurement_component_id'
+        )
+        ->where('procurements.sip_id', $id)
+        ->where('procurements.delete_flag', 'n')
+        ->where('procurement_components.delete_flag', 'n')
+        ->where('procurement_items.delete_flag', 'n')
+        ->sum('procurement_items.amount');
+
+    $budgetAllocation = (float) $sip->budget_allocation;
+
+    $remainingBudget = $budgetAllocation - $usedBudget;
+
+    return view('sip.manage', compact('sip', 'approvers','aip','codes','usedBudget','remainingBudget','budgetAllocation'));
 }
 
 public function procurementList($id)
@@ -256,7 +281,7 @@ public function storeProcurementItem(Request $request, $procurement_component_id
             'amount' => $request->amount,
             'unit_of_measure' => $request->unit_of_measure,
             'year' => $request->year,
-            'delete_flag' => 0,
+            'delete_flag' => 'n',
             'created_at' => now(),
         ]);
 

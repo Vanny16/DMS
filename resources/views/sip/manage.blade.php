@@ -296,11 +296,10 @@
                                     <i class="fa fa-plus"></i> Create Procurement
                                 </button>
 
-                               <a href="{{ route('sip.procurement.generate.app', $sip->sip_id) }}"
-    target="_blank"
-    class="btn btn-outline-primary btn-modern mb-2">
-    <i class="fa fa-file-pdf-o"></i> Generate APP
-</a>
+                                <a href="{{ route('sip.procurement.generate.app', $sip->sip_id) }}" target="_blank"
+                                    class="btn btn-outline-primary btn-modern mb-2">
+                                    <i class="fa fa-file-pdf-o"></i> Generate APP
+                                </a>
 
                                 <a href="{{ route('sip.procurement.list', $sip->sip_id) }}"
                                     class="btn btn-info btn-modern">
@@ -321,16 +320,24 @@
 
                         <div class="card-body">
                             @forelse($approvers as $approver)
-                                <div class="approver-card">
-                                    <span class="approver-avatar">
+                                <div class="approver-card d-flex align-items-center mb-2">
+
+                                    <span class="approver-avatar me-2">
                                         {{ strtoupper(substr($approver->first_name, 0, 1)) }}
                                     </span>
 
-                                    <strong>
-                                        {{ $approver->last_name }},
-                                        {{ $approver->first_name }}
-                                        {{ $approver->initial }}
-                                    </strong>
+                                    <div>
+                                        <strong>
+                                            {{ $approver->last_name }},
+                                            {{ $approver->first_name }}
+                                            {{ $approver->initial }}
+                                        </strong>
+
+                                        <div class="text-muted" style="font-size: 12px;">
+                                            {{ $approver->position }}
+                                        </div>
+                                    </div>
+
                                 </div>
                             @empty
                                 <p class="text-muted mb-0">No approvers selected.</p>
@@ -346,15 +353,76 @@
                         </div>
 
                         <div class="card-body">
-                            <p class="mb-2"><strong>Budget:</strong></p>
-                            <h5 class="text-primary font-weight-bold">{{ $sip->budget_allocation ?? 'N/A' }}</h5>
+
+                            {{-- TOTAL BUDGET --}}
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">
+                                    <strong>Total Budget Allocation</strong>
+                                </p>
+
+                                <h4 class="text-primary font-weight-bold mb-0">
+                                    ₱{{ number_format($budgetAllocation, 2) }}
+                                </h4>
+                            </div>
 
                             <hr>
 
-                            <p class="mb-2"><strong>Current Status:</strong></p>
+                            {{-- USED BUDGET --}}
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">
+                                    <strong>Used Procurement Budget</strong>
+                                </p>
+
+                                <h5 class="text-danger font-weight-bold mb-0">
+                                    ₱{{ number_format($usedBudget, 2) }}
+                                </h5>
+                            </div>
+
+                            <hr>
+
+                            {{-- REMAINING --}}
+                            <div class="mb-3">
+                                <p class="mb-1 text-muted">
+                                    <strong>Remaining Budget</strong>
+                                </p>
+
+                                <h4 class="text-success font-weight-bold mb-0">
+                                    ₱{{ number_format($remainingBudget, 2) }}
+                                </h4>
+                            </div>
+
+                            <hr>
+
+                            {{-- UTILIZATION --}}
+                            @php
+                                $utilization = $budgetAllocation > 0 ? ($usedBudget / $budgetAllocation) * 100 : 0;
+
+                                $utilization = min($utilization, 100);
+                            @endphp
+
+                            <p class="mb-2">
+                                <strong>Budget Utilization</strong>
+                            </p>
+
+                            <div class="progress mb-3" style="height: 18px; border-radius: 20px;">
+                                <div class="progress-bar bg-info" role="progressbar"
+                                    style="width: {{ $utilization }}%; border-radius:20px;">
+
+                                    {{ number_format($utilization, 0) }}%
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            {{-- STATUS --}}
+                            <p class="mb-2">
+                                <strong>Current Status</strong>
+                            </p>
+
                             <span class="status-badge {{ $badgeClass }}">
                                 {{ $sip->status ?? 'N/A' }}
                             </span>
+
                         </div>
                     </div>
                 </div>

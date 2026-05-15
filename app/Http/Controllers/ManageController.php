@@ -64,7 +64,6 @@ class ManageController extends Controller
 
             'created_at'   => now(),
             'created_by'   => session('usrUuId'),
-
         ]);
 
         return redirect()
