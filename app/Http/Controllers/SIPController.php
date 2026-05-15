@@ -192,71 +192,162 @@ public function procurementItems($procurement_id)
 }
 
 
-public function generateAPP($sip_id)
-{
-    $sip = DB::table('sips')
-        ->where('sip_id', $sip_id)
-        ->first();
+    // public function generateAPP($sip_id)
+    // {
+    //     $sip = DB::table('sips')
+    //         ->where('sip_id', $sip_id)
+    //         ->first();
 
-    $procurements = DB::table('procurements')
-        ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+    //     $procurements = DB::table('procurements')
+    //         ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
 
-        ->join(
-            'procurement_components',
-            'procurement_components.procurement_id',
-            '=',
-            'procurements.procurement_id'
-        )
+    //         ->join(
+    //             'procurement_components',
+    //             'procurement_components.procurement_id',
+    //             '=',
+    //             'procurements.procurement_id'
+    //         )
 
-        ->leftJoin(
-            'procurement_items',
-            'procurement_items.procurement_component_id',
-            '=',
-            'procurement_components.procurement_component_id'
-        )
+    //         ->leftJoin(
+    //             'procurement_items',
+    //             'procurement_items.procurement_component_id',
+    //             '=',
+    //             'procurement_components.procurement_component_id'
+    //         )
 
-        ->where('procurements.sip_id', $sip_id)
+    //         ->where('procurements.sip_id', $sip_id)
 
-        ->select(
-            'procurements.procurement_id',
-            'codes.code',
+    //         ->select(
+    //             'procurements.procurement_id',
+    //             'codes.code',
 
-            'procurement_components.procurement_component_id',
-            'procurement_components.description',
+    //             'procurement_components.procurement_component_id',
+    //             'procurement_components.description',
 
-            'procurement_items.procurement_item_id',
-            'procurement_items.item_name',
-            'procurement_items.unit_of_measure',
-            'procurement_items.amount',
-            'procurement_items.year',
-            'procurement_items.mode_of_procurement'
-        )
+    //             'procurement_items.procurement_item_id',
+    //             'procurement_items.item_name',
+    //             'procurement_items.unit_of_measure',
+    //             'procurement_items.amount',
+    //             'procurement_items.year',
+    //             'procurement_items.mode_of_procurement'
+    //         )
 
-        ->orderBy('codes.code', 'asc')
-        ->get();
+    //         ->orderBy('codes.code', 'asc')
+    //         ->get();
 
-    $itemIds = $procurements
-        ->pluck('procurement_item_id')
-        ->filter();
+    //     $itemIds = $procurements
+    //         ->pluck('procurement_item_id')
+    //         ->filter();
 
-    $months = DB::table('procurement_item_months')
-        ->whereIn('procurement_item_id', $itemIds)
-        ->get()
-        ->groupBy('procurement_item_id');
+    //     $months = DB::table('procurement_item_months')
+    //         ->whereIn('procurement_item_id', $itemIds)
+    //         ->get()
+    //         ->groupBy('procurement_item_id');
 
-    $pdf = PDF::loadView(
-        'sip.pdf.app',
-        compact(
-            'sip',
-            'procurements',
-            'months'
-        )
-    );
+    //     $pdf = PDF::loadView(
+    //         'sip.pdf.app',
+    //         compact(
+    //             'sip',
+    //             'procurements',
+    //             'months'
+    //         )
+    //     );
 
-    $pdf->setPaper('legal', 'landscape');
+    //     $pdf->setPaper('legal', 'landscape');
 
-    return $pdf->stream('annual-procurement-plan.pdf');
-}
+    //     return $pdf->stream('annual-procurement-plan.pdf');
+    // }
+
+    public function generateAPP($sip_id)
+    {
+        $sip = DB::table('sips')
+            ->where('sip_id', $sip_id)
+            ->first();
+
+        $procurements = DB::table('procurements')
+            ->join(
+                'codes',
+                'codes.code_id',
+                '=',
+                'procurements.code_id'
+            )
+
+            ->join(
+                'procurement_components',
+                'procurement_components.procurement_id',
+                '=',
+                'procurements.procurement_id'
+            )
+
+            ->leftJoin(
+                'procurement_items',
+                'procurement_items.procurement_component_id',
+                '=',
+                'procurement_components.procurement_component_id'
+            )
+
+            ->where('procurements.sip_id', $sip_id)
+
+            ->select(
+
+                // PROCUREMENT
+                'procurements.procurement_id',
+                'procurements.code as category_title',
+
+                // CODE
+                'codes.code',
+
+                // COMPONENT
+                'procurement_components.procurement_component_id',
+
+                'procurement_components.description',
+                'procurement_components.end_user_unit',
+                'procurement_components.project_description',
+                'procurement_components.mode_of_procurement',
+                'procurement_components.early_procurement',
+                'procurement_components.early_procurement_details',
+                'procurement_components.start_date',
+                'procurement_components.end_date',
+                'procurement_components.source_of_fund',
+                'procurement_components.approved_budget',
+                'procurement_components.procurement_strategy',
+                'procurement_components.remarks',
+
+                // ITEMS
+                'procurement_items.procurement_item_id',
+                'procurement_items.item_name',
+                'procurement_items.unit_of_measure',
+                'procurement_items.amount',
+                'procurement_items.year',
+                'procurement_items.mode_of_procurement as item_mode_of_procurement'
+            )
+
+            ->orderBy('codes.code', 'asc')
+            ->orderBy('procurements.procurement_id', 'asc')
+            ->get();
+
+        $itemIds = $procurements
+            ->pluck('procurement_item_id')
+            ->filter();
+
+        $months = DB::table('procurement_item_months')
+            ->whereIn('procurement_item_id', $itemIds)
+            ->get()
+            ->groupBy('procurement_item_id');
+
+        $pdf = PDF::loadView(
+            'sip.pdf.app',
+            compact(
+                'sip',
+                'procurements',
+                'months'
+            )
+        );
+
+        $pdf->setPaper('legal', 'landscape');
+
+        return $pdf->stream('annual-procurement-plan.pdf');
+    }
 
 
 public function storeProcurementItem(Request $request, $procurement_component_id)
