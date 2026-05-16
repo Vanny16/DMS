@@ -286,6 +286,46 @@
         </tr>
     </table>
 
+    <br><br><br>
+
+<table style="width:100%; border:none;">
+    <tr>
+
+        {{-- PREPARED BY --}}
+        <td style="border:none; width:33%; text-align:center; vertical-align:top;">
+            <p style="margin-bottom:40px;">
+                Prepared by:
+            </p>
+
+            <strong>
+                ___________________________
+            </strong>
+        </td>
+
+        {{-- REVIEWED BY --}}
+        <td style="border:none; width:33%; text-align:center; vertical-align:top;">
+            <p style="margin-bottom:40px;">
+                Reviewed by:
+            </p>
+
+            <strong>
+                ___________________________
+            </strong>
+        </td>
+
+        {{-- APPROVED BY --}}
+        <td style="border:none; width:33%; text-align:center; vertical-align:top;">
+            <p style="margin-bottom:40px;">
+                Approved by:
+            </p>
+
+            <strong>
+                ___________________________
+            </strong>
+        </td>
+
+    </tr>
+</table>
 </body>
 
 <style>
