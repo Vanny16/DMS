@@ -88,6 +88,7 @@
         <tr>
             <th rowspan="2">CODE</th>
             <th rowspan="2">ACTIVITY</th>
+            <th rowspan="2">PERFORMANCE INDICATOR</th>
             <th colspan="4">Q1</th>
             <th colspan="4">Q2</th>
             <th colspan="4">Q3</th>
@@ -138,7 +139,7 @@
 
             {{-- ================= CATEGORY HEADER ================= --}}
             <tr class="category">
-                <td colspan="22" class="left">
+                <td colspan="23" class="left">
                     {{ $code }}
                 </td>
             </tr>
@@ -167,11 +168,14 @@
                 @endphp
 
                 <tr>
+                    <td></td>
                     <td class="left">
                         {{ $group['component']->project_title }}
                     </td>
 
-                    <td></td>
+                    <td class="left">
+                        {{ $group['component']->performance_indicator ?? '-' }}
+                    </td>
 
                     <td>{{ number_format($m[1], 2) }}</td>
                     <td>{{ number_format($m[2], 2) }}</td>
@@ -220,6 +224,8 @@
 
                 <td></td>
                 <td></td>
+
+                <td></td>
                 <td>{{ number_format($catQ1, 2) }}</td>
 
                 <td></td>
@@ -254,6 +260,8 @@
 
             <td></td>
             <td></td>
+            <td></td>
+
             <td>{{ number_format($grandQ1, 2) }}</td>
 
             <td></td>
@@ -273,8 +281,8 @@
 
             <td>{{ number_format($grandTotal, 2) }}</td>
             <td></td>
-                <td></td>
-                <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 
