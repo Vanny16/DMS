@@ -266,7 +266,29 @@
         </td>
 
         <td style="border:none; text-align:center;">
-            Approved by:
+            Check and Verified:
+            <br><br><br>
+
+            <strong>
+                _______________________
+            </strong>
+            <br>
+           Chief-Schools Governance Operations Division
+        </td>
+
+        <td style="border:none; text-align:center;">
+            Certified funds available:
+            <br><br><br>
+
+            <strong>
+                _______________________
+            </strong>
+            <br>
+            Budget Officer
+        </td>
+
+        <td style="border:none; text-align:center;">
+            Approved:
             <br><br><br>
 
             <strong>

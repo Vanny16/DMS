@@ -305,6 +305,11 @@
                                     class="btn btn-info btn-modern">
                                     <i class="fa fa-list"></i> Procurement List
                                 </a>
+
+                                 <a href="{{ route('sip.procurement.generate.wfp', $sip->sip_id) }}" target="_blank"
+                                    class="btn btn-outline-primary btn-modern mb-2">
+                                    <i class="fa fa-file-pdf-o"></i> Generate WFP
+                                </a>
                             </div>
                         </div>
                     </div>
