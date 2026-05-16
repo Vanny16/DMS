@@ -47,17 +47,22 @@
         </div>
     </section>
 
-    <div class="modal fade" id="createItemModal" tabindex="-1" role="dialog" aria-labelledby="createItemModalLabel"
-        aria-hidden="true">
+   <div class="modal fade" id="createItemModal" tabindex="-1" role="dialog" aria-labelledby="createItemModalLabel"
+    aria-hidden="true">
 
-        <div class="modal-dialog modal-lg" role="document">
-            <form method="POST" action="{{ route('sip.procurement.items.store', $procurement->procurement_component_id) }}">
+    <div class="modal-dialog modal-lg" role="document">
+
+        <form method="POST"
+              enctype="multipart/form-data"
+              action="{{ route('sip.procurement.items.store', $procurement->procurement_component_id) }}">
+
             @csrf
 
             <div class="modal-content" style="border-radius: 18px;">
+
                 <div class="modal-header border-0">
-                    <h5 class="modal-title font-weight-bold" id="createItemModalLabel">
-                        Create Item
+                    <h5 class="modal-title font-weight-bold">
+                        Create PPMP Item
                     </h5>
 
                     <button type="button" class="close" data-dismiss="modal">
@@ -67,35 +72,49 @@
 
                 <div class="modal-body">
 
+                    {{-- ITEM NAME --}}
                     <div class="form-group">
                         <label>Item Name</label>
                         <input type="text" name="item_name" class="form-control" required>
                     </div>
 
+                    {{-- TYPE OF PROJECT --}}
+                    <div class="form-group">
+                        <label>Type of Project</label>
+                        <input type="text" name="type_of_project" class="form-control">
+                    </div>
+
+                    {{-- MODE OF PROCUREMENT --}}
                     <div class="form-group">
                         <label>Mode of Procurement</label>
                         <input type="text" name="mode_of_procurement" class="form-control" required>
                     </div>
 
+                    <div class="form-row">
+
+                        {{-- QUANTITY --}}
+                        <div class="form-group col-md-6">
+                            <label>Quantity</label>
+                            <input type="number" name="quantity" class="form-control" min="1" required>
+                        </div>
+
+                        {{-- UNIT --}}
+                        <div class="form-group col-md-6">
+                            <label>Unit of Measure</label>
+                            <input type="text" name="unit_of_measure" class="form-control" placeholder="pcs, box, set..." required>
+                        </div>
+
+                    </div>
+
+                    {{-- AMOUNT --}}
                     <div class="form-group">
                         <label>Amount</label>
                         <input type="number" name="amount" class="form-control" step="0.01" required>
                     </div>
 
                     <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label>Measure</label>
-                            <select name="unit_of_measure" class="form-control" required>
-                                <option value="">Select Unit</option>
-                                <option value="pcs">pcs</option>
-                                <option value="box">box</option>
-                                <option value="ream">ream</option>
-                                <option value="set">set</option>
-                                <option value="unit">unit</option>
-                                <option value="lot">lot</option>
-                            </select>
-                        </div>
 
+                        {{-- YEAR --}}
                         <div class="form-group col-md-6">
                             <label>Year</label>
                             <select name="year" class="form-control" required>
@@ -105,48 +124,73 @@
                                 @endfor
                             </select>
                         </div>
+
+                        {{-- DELIVERY PERIOD --}}
+                        <div class="form-group col-md-6">
+                            <label>Expected Delivery Period</label>
+                            <input type="text" name="delivery_period" class="form-control" placeholder="e.g. 2 weeks, 1 month">
+                        </div>
+
                     </div>
 
+                    {{-- IMPLEMENTATION PERIOD --}}
                     <div class="form-group">
-                        <label>Select Month(s)</label>
-                        <select name="months[]" id="months" class="form-control" multiple required
-                            style="height: 120px;">
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="September">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
+                        <label>Implementation Period</label>
+                        <input type="text" name="implementation_period" class="form-control" placeholder="e.g. Jan - March 2026">
+                    </div>
+
+                    {{-- MONTH DROPDOWN (SINGLE SELECT) --}}
+                    <div class="form-group">
+                        <label>Month</label>
+                        <select name="month" class="form-control" required>
+                            <option value="">Select Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
                         </select>
                     </div>
 
+                    {{-- SUPPORTING DOCS --}}
                     <div class="form-group">
-                        <label>Enter Quantity for Selected Month(s)</label>
-                        <div id="monthQuantityContainer"></div>
+                        <label>Supporting Documents</label>
+                        <input type="file" name="supporting_documents" class="form-control">
+                    </div>
+
+                    {{-- SUPPORTING DOC DESCRIPTION --}}
+                    <div class="form-group">
+                        <label>Supporting Document Description</label>
+                        <textarea name="supporting_documents_description" class="form-control" rows="2"></textarea>
                     </div>
 
                 </div>
 
                 <div class="modal-footer border-0">
-                    <button type="submit" class="btn btn-dark btn-modern">
+
+                    <button type="submit" class="btn btn-dark">
                         <i class="fa fa-save"></i> Save
                     </button>
 
-                    <button type="button" class="btn btn-secondary btn-modern" data-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         Close
                     </button>
-                </div>
-            </div>
-            </form>
-        </div>
-    </div>
 
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
 
     <script>
         document.getElementById('months').addEventListener('change', function() {

@@ -699,62 +699,91 @@ public function storeProcurementItem(Request $request, $procurement_component_id
         'amount' => 'required|numeric',
         'unit_of_measure' => 'required|string',
         'year' => 'required',
-        'months' => 'required|array',
-        'quantities' => 'required|array',
+        'month' => 'required|integer|min:1|max:12',
+        'quantity' => 'required|numeric|min:1',
+        'type_of_project' => 'nullable|string',
+        'delivery_period' => 'nullable|string',
+        'implementation_period' => 'nullable|string',
+        'supporting_documents' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:10240',
+        'supporting_documents_description' => 'nullable|string',
     ]);
 
     DB::beginTransaction();
 
     try {
+
+        // ================= FILE UPLOAD =================
+        $fileName = null;
+
+        if ($request->hasFile('supporting_documents')) {
+            $file = $request->file('supporting_documents');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ppmp'), $fileName);
+        }
+
+        // ================= INSERT ITEM =================
         $itemId = DB::table('procurement_items')->insertGetId([
+
             'procurement_component_id' => $procurement_component_id,
             'item_name' => $request->item_name,
             'mode_of_procurement' => $request->mode_of_procurement,
             'amount' => $request->amount,
             'unit_of_measure' => $request->unit_of_measure,
             'year' => $request->year,
+            'quantity' => $request->quantity,
+
+            // NEW FIELDS
+            'type_of_project' => $request->type_of_project,
+            'delivery_period' => $request->delivery_period,
+            'implementation_period' => $request->implementation_period,
+            'supporting_documents' => $fileName,
+            'supporting_documents_description' => $request->supporting_documents_description,
+
             'delete_flag' => 'n',
             'created_at' => now(),
         ]);
 
-        $monthMap = [
-            'January' => 1,
-            'February' => 2,
-            'March' => 3,
-            'April' => 4,
-            'May' => 5,
-            'June' => 6,
-            'July' => 7,
-            'August' => 8,
-            'September' => 9,
-            'October' => 10,
-            'November' => 11,
-            'December' => 12,
-        ];
-
-        foreach ($request->months as $monthName) {
-            DB::table('procurement_item_months')->insert([
-                'procurement_item_id' => $itemId,
-                'month_id' => $monthMap[$monthName],
-                'month' => $monthName,
-                'quantity' => $request->quantities[$monthName] ?? 0,
-                'created_at' => now(),
-            ]);
-        }
+        // ================= INSERT MONTH (SINGLE ONLY) =================
+        DB::table('procurement_item_months')->insert([
+            'procurement_item_id' => $itemId,
+            'month_id' => $request->month,
+            'month' => $this->monthName($request->month),
+            'created_at' => now(),
+        ]);
 
         DB::commit();
 
-        return redirect()
-            ->back()
-            ->with('success', 'Procurement item saved successfully.');
+        return redirect()->back()->with('success', 'Procurement item saved successfully.');
 
     } catch (\Exception $e) {
+
         DB::rollBack();
 
-        return redirect()
-            ->back()
-            ->with('error', 'Failed to save procurement item.');
+        return redirect()->back()->with('error', 'Failed to save procurement item: ' . $e->getMessage());
     }
+}
+
+/**
+ * Convert month number to name
+ */
+private function monthName($monthId)
+{
+    $months = [
+        1 => 'January',
+        2 => 'February',
+        3 => 'March',
+        4 => 'April',
+        5 => 'May',
+        6 => 'June',
+        7 => 'July',
+        8 => 'August',
+        9 => 'September',
+        10 => 'October',
+        11 => 'November',
+        12 => 'December',
+    ];
+
+    return $months[$monthId] ?? null;
 }
 
 // public function storeProcurement(Request $request, $id)
