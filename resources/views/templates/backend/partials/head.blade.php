@@ -1,7 +1,7 @@
 <meta charset="utf-8">
-<title>Infinit SAMS</title>
+<title>DMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-<link rel="icon" type="image/png" href="{{ asset('frontend/images/piep.png') }}"/>
+<link rel="icon" type="image/png" href="{{ asset('css/DNRSA.png') }}"/>
 <meta name="description" content="Infinit SAMS - Student Administration Management System">
 <meta name="author" content="Advanced Infinit Technology Solutions Inc.">
 <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -51,10 +51,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<style> 
-    #autoresizing { 
-        display: block; 
-        overflow: hidden; 
-        resize: none; 
-    } 
-</style> 
+<style>
+    #autoresizing {
+        display: block;
+        overflow: hidden;
+        resize: none;
+    }
+</style>

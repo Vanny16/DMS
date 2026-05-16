@@ -97,7 +97,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <a href="#" target="_BLANK" class="brand-link d-flex align-items-center">
-        <img src="{{ asset('images/piep.png') }}" alt="PIEP Logo" class="brand-image img-circle elevation-3">
+        <img src="{{ asset('css/DNRSA.png') }}" alt="PIEP Logo" class="brand-image img-circle elevation-3">
         <span class="brand-text ml-2">INFINIT DMS</span>
     </a>
 

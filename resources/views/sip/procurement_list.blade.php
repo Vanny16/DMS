@@ -30,7 +30,7 @@
 
                 <div class="card-body table-responsive">
                     <table class="table table-bordered table-hover">
-                        <thead class="text-center">
+                        {{-- <thead class="text-center">
                             <tr>
                                 <th width="5%">#</th>
                                 <th>Code</th>
@@ -40,9 +40,74 @@
                                 <th>Date Created</th>
                                 <th width="15%">Action</th>
                             </tr>
+                        </thead> --}}
+
+                        <thead class="text-center">
+
+                            <tr>
+
+                                <th width="4%">
+                                    #
+                                </th>
+
+                                <th width="6%">
+                                    Code
+                                </th>
+
+                                <th width="15%">
+                                    Project Title
+                                </th>
+
+                                <th width="10%">
+                                    End User /
+                                    Implementing Unit
+                                </th>
+
+                                <th width="12%">
+                                    Project Description
+                                </th>
+
+                                <th width="8%">
+                                    Mode of Procurement
+                                </th>
+
+                                <th width="5%">
+                                    EPA
+                                </th>
+
+                                <th width="8%">
+                                    Start Date
+                                </th>
+
+                                <th width="8%">
+                                    End Date
+                                </th>
+
+                                <th width="8%">
+                                    Source of Fund
+                                </th>
+
+                                <th width="8%">
+                                    Budget
+                                </th>
+
+                                <th width="10%">
+                                    Procurement Strategy
+                                </th>
+
+                                <th width="8%">
+                                    Remarks
+                                </th>
+
+                                <th width="10%">
+                                    Action
+                                </th>
+
+                            </tr>
+
                         </thead>
 
-                        <tbody>
+                        {{-- <tbody>
                             @forelse($procurements as $index => $procurement)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
@@ -66,6 +131,119 @@
                                         <i class="fa fa-folder-open fa-2x mb-2"></i>
                                         <br>
                                         No procurements created yet.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody> --}}
+
+                        <tbody>
+                            @forelse($procurements as $index => $procurement)
+                                <tr>
+
+                                    {{-- NO --}}
+                                    <td>
+                                        {{ $index + 1 }}
+                                    </td>
+
+                                    {{-- CATEGORY / CODE --}}
+                                    <td>
+                                        {{ $procurement->code }}
+                                    </td>
+
+                                    {{-- PROJECT TITLE --}}
+                                    <td>
+                                        <strong>
+                                            {{ $procurement->project_title }}
+                                        </strong>
+
+                                        @if ($procurement->project_description)
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ $procurement->project_description }}
+                                            </small>
+                                        @endif
+                                    </td>
+
+                                    {{-- END USER --}}
+                                    <td>
+                                        {{ $procurement->end_user_unit }}
+                                    </td>
+
+                                    <td>
+                                        <strong>
+                                            {{ $procurement->project_description }}
+                                        </strong>
+
+
+                                    </td>
+
+                                    {{-- MODE --}}
+                                    <td>
+                                        {{ $procurement->mode_of_procurement }}
+                                    </td>
+
+                                    {{-- EARLY PROCUREMENT --}}
+                                    <td class="text-center">
+                                        {{ $procurement->early_procurement }}
+                                    </td>
+
+                                    {{-- START DATE --}}
+                                    <td>
+                                        @if ($procurement->start_date)
+                                            {{ \Carbon\Carbon::parse($procurement->start_date)->format('M d, Y') }}
+                                        @endif
+                                    </td>
+
+                                    {{-- END DATE --}}
+                                    <td>
+                                        @if ($procurement->end_date)
+                                            {{ \Carbon\Carbon::parse($procurement->end_date)->format('M d, Y') }}
+                                        @endif
+                                    </td>
+
+                                    {{-- SOURCE OF FUND --}}
+                                    <td>
+                                        {{ $procurement->source_of_fund }}
+                                    </td>
+
+                                    {{-- BUDGET --}}
+                                    <td class="text-right">
+                                        {{ number_format($procurement->approved_budget, 2) }}
+                                    </td>
+
+                                    {{-- PROCUREMENT STRATEGY --}}
+                                    <td>
+                                        {{ $procurement->procurement_strategy }}
+                                    </td>
+
+                                    {{-- REMARKS --}}
+                                    <td>
+                                        {{ $procurement->remarks }}
+                                    </td>
+
+                                    {{-- ACTION --}}
+                                    <td>
+                                        <a href="{{ route('sip.procurement.items', $procurement->procurement_id) }}"
+                                            class="btn btn-success btn-sm btn-modern">
+
+                                            <i class="fa fa-plus"></i>
+                                            Create Item
+                                        </a>
+                                    </td>
+
+                                </tr>
+
+                            @empty
+
+                                <tr>
+                                    <td colspan="13" class="text-center text-muted py-4">
+
+                                        <i class="fa fa-folder-open fa-2x mb-2"></i>
+
+                                        <br>
+
+                                        No procurements created yet.
+
                                     </td>
                                 </tr>
                             @endforelse
