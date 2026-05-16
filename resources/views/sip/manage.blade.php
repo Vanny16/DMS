@@ -311,7 +311,7 @@
                                     <i class="fa fa-file-pdf-o"></i> Generate WFP
                                 </a>
 
-                                 <a href="{{ route('sip.procurement.generate.wfp', $sip->sip_id) }}" target="_blank"
+                                 <a href="{{ route('sip.procurement.generate.ppmf', $sip->sip_id) }}" target="_blank"
                                     class="btn btn-outline-primary btn-modern mb-2">
                                     <i class="fa fa-file-pdf-o"></i> Generate PPMF
                                 </a>

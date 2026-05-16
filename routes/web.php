@@ -35,17 +35,14 @@ Route::post('/sip/aip/update/{id}', 'SIPController@updateAip')->name('sip.aip.up
 
 Route::post('/forgot-password', [App\Http\Controllers\LoginController::class, 'forgotPassword'])->name('forgot.password');
 Route::post('/sip/procurement/store/{id}', [SIPController::class, 'storeProcurement'])->name('sip.procurement.store');
-Route::get('/sip/procurement/list/{id}', [SIPController::class, 'procurementList'])
-    ->name('sip.procurement.list');
+Route::get('/sip/procurement/list/{id}', [SIPController::class, 'procurementList'])->name('sip.procurement.list');
+Route::get('/sip/procurement/{procurement_id}/items', [SIPController::class, 'procurementItems'])->name('sip.procurement.items');
 
-    Route::get('/sip/procurement/{procurement_id}/items', [SIPController::class, 'procurementItems'])
-    ->name('sip.procurement.items');
+Route::post('/sip/procurement-component/{procurement_component_id}/items/store', [SIPController::class, 'storeProcurementItem'])->name('sip.procurement.items.store');
+Route::get('/sip/{sip_id}/procurement/generate/app', [SIPController::class, 'generateAPP'])->name('sip.procurement.generate.app');
+Route::get('/sip/{sip_id}/procurement/generate/wfp', [SIPController::class, 'generateWFP'])->name('sip.procurement.generate.wfp');
+Route::get('/sip/{sip_id}/procurement/generate/ppmf', [SIPController::class, 'generatePPMP'])->name('sip.procurement.generate.ppmf');
 
-Route::post('/sip/procurement-component/{procurement_component_id}/items/store', [SIPController::class, 'storeProcurementItem'])
-    ->name('sip.procurement.items.store');
-
-    Route::get('/sip/{sip_id}/procurement/generate/app', [SIPController::class, 'generateAPP'])->name('sip.procurement.generate.app');
-    Route::get('/sip/{sip_id}/procurement/generate/wfp', [SIPController::class, 'generateWFP'])->name('sip.procurement.generate.wfp');
 
 // Other Main pages
 Route::get('/invalid', [MainController::class, 'invalid']);

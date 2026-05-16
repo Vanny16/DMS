@@ -403,6 +403,125 @@ public function procurementItems($procurement_id)
     }
 
     public function generateWFP($sip_id)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | SIP HEADER
+        |--------------------------------------------------------------------------
+        */
+        $sip = DB::table('sips')
+            ->where('sip_id', $sip_id)
+            ->first();
+
+        /*
+        |--------------------------------------------------------------------------
+        | COMPONENTS
+        |--------------------------------------------------------------------------
+        */
+        $components = DB::table('procurements')
+            ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+            ->join('procurement_components', 'procurement_components.procurement_id', '=', 'procurements.procurement_id')
+            ->where('procurements.sip_id', $sip_id)
+            ->select(
+                'procurements.procurement_id',
+                'codes.code',
+                'procurement_components.procurement_component_id',
+                'procurement_components.description as project_title',
+                    'procurement_components.end_user_unit',
+        'procurement_components.source_of_fund',
+        'procurement_components.remarks'
+            )
+            ->orderBy('codes.code', 'asc')
+            ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | ITEMS
+        |--------------------------------------------------------------------------
+        */
+        $items = DB::table('procurement_items')
+            ->whereIn('procurement_component_id', $components->pluck('procurement_component_id'))
+            ->get()
+            ->groupBy('procurement_component_id');
+
+        /*
+        |--------------------------------------------------------------------------
+        | MONTHLY DATA
+        |--------------------------------------------------------------------------
+        */
+        $months = DB::table('procurement_item_months')
+            ->join('procurement_items', 'procurement_items.procurement_item_id', '=', 'procurement_item_months.procurement_item_id')
+            ->whereIn('procurement_item_months.procurement_item_id', $items->flatten()->pluck('procurement_item_id'))
+            ->select(
+                'procurement_item_months.procurement_item_id',
+                'procurement_item_months.month_id',
+                'procurement_items.amount'
+            )
+            ->get()
+            ->groupBy('procurement_item_id');
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUILD REPORT (MERGED PER COMPONENT)
+        |--------------------------------------------------------------------------
+        */
+        $report = [];
+
+        foreach ($components as $component) {
+
+            $componentItems = $items[$component->procurement_component_id] ?? collect();
+
+            $monthly = array_fill(1, 12, 0);
+
+            foreach ($componentItems as $item) {
+
+                $itemMonths = $months[$item->procurement_item_id] ?? collect();
+
+                foreach ($itemMonths as $m) {
+                    $month = (int) $m->month_id;
+
+                    if ($month >= 1 && $month <= 12) {
+                        $monthly[$month] += $m->amount;
+                    }
+                }
+            }
+
+            $q1 = $monthly[1] + $monthly[2] + $monthly[3];
+            $q2 = $monthly[4] + $monthly[5] + $monthly[6];
+            $q3 = $monthly[7] + $monthly[8] + $monthly[9];
+            $q4 = $monthly[10] + $monthly[11] + $monthly[12];
+
+            $total = $q1 + $q2 + $q3 + $q4;
+
+            $report[] = [
+                'code' => $component->code,
+                'category' => $component->procurement_id,
+                'category_name' => $component->code, // category label
+                'component' => $component,
+                'monthly' => $monthly,
+                'q1' => $q1,
+                'q2' => $q2,
+                'q3' => $q3,
+                'q4' => $q4,
+                'total' => $total,
+            ];
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | PDF
+        |--------------------------------------------------------------------------
+        */
+        $pdf = PDF::loadView('sip.pdf.wfp', [
+            'sip' => $sip,
+            'report' => $report
+        ]);
+
+        $pdf->setPaper('legal', 'landscape');
+
+        return $pdf->stream('work-and-financial-plan.pdf');
+    }
+
+public function generatePPMP($sip_id)
 {
     /*
     |--------------------------------------------------------------------------
@@ -420,105 +539,154 @@ public function procurementItems($procurement_id)
     */
     $components = DB::table('procurements')
         ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
-        ->join('procurement_components', 'procurement_components.procurement_id', '=', 'procurements.procurement_id')
+        ->join(
+            'procurement_components',
+            'procurement_components.procurement_id',
+            '=',
+            'procurements.procurement_id'
+        )
         ->where('procurements.sip_id', $sip_id)
         ->select(
-            'procurements.procurement_id',
             'codes.code',
+
             'procurement_components.procurement_component_id',
             'procurement_components.description as project_title',
-                'procurement_components.end_user_unit',
-    'procurement_components.source_of_fund',
-    'procurement_components.remarks'
+            'procurement_components.project_description',
+
+            // 'procurement_components.type_of_project',
+            // 'procurement_components.quantity_size',
+
+            'procurement_components.mode_of_procurement',
+            // 'procurement_components.pre_procurement',
+
+            'procurement_components.start_date',
+            'procurement_components.end_date',
+
+            // 'procurement_components.implementation_period',
+
+            'procurement_components.source_of_fund',
+            'procurement_components.approved_budget',
+
+            // 'procurement_components.supporting_documents',
+            'procurement_components.remarks'
         )
         ->orderBy('codes.code', 'asc')
         ->get();
 
     /*
     |--------------------------------------------------------------------------
-    | ITEMS
+    | PROCUREMENT ITEMS
     |--------------------------------------------------------------------------
     */
     $items = DB::table('procurement_items')
-        ->whereIn('procurement_component_id', $components->pluck('procurement_component_id'))
+        ->whereIn(
+            'procurement_component_id',
+            $components->pluck('procurement_component_id')
+        )
+        ->select(
+            'procurement_item_id',
+            'procurement_component_id',
+            'item_name',
+            'unit_of_measure as quantity_size',
+
+
+            'amount'
+        )
         ->get()
         ->groupBy('procurement_component_id');
 
     /*
     |--------------------------------------------------------------------------
-    | MONTHLY DATA
+    | MONTH DISTRIBUTION
     |--------------------------------------------------------------------------
     */
     $months = DB::table('procurement_item_months')
-        ->join('procurement_items', 'procurement_items.procurement_item_id', '=', 'procurement_item_months.procurement_item_id')
-        ->whereIn('procurement_item_months.procurement_item_id', $items->flatten()->pluck('procurement_item_id'))
+        ->join(
+            'procurement_items',
+            'procurement_items.procurement_item_id',
+            '=',
+            'procurement_item_months.procurement_item_id'
+        )
+        ->whereIn(
+            'procurement_item_months.procurement_item_id',
+            $items->flatten()->pluck('procurement_item_id')
+        )
         ->select(
             'procurement_item_months.procurement_item_id',
             'procurement_item_months.month_id',
-            'procurement_items.amount'
+            'procurement_items.amount',
         )
         ->get()
         ->groupBy('procurement_item_id');
 
     /*
     |--------------------------------------------------------------------------
-    | BUILD REPORT (MERGED PER COMPONENT)
+    | BUILD REPORT
     |--------------------------------------------------------------------------
     */
-$report = [];
+    $report = [];
 
-foreach ($components as $component) {
+    foreach ($components as $component) {
 
-    $componentItems = $items[$component->procurement_component_id] ?? collect();
+        // initialize months
+        $monthly = array_fill(1, 12, 0);
 
-    $monthly = array_fill(1, 12, 0);
+        $componentItems =
+            $items[$component->procurement_component_id]
+            ?? collect();
 
-    foreach ($componentItems as $item) {
+        foreach ($componentItems as $item) {
 
-        $itemMonths = $months[$item->procurement_item_id] ?? collect();
+            $itemMonths =
+                $months[$item->procurement_item_id]
+                ?? collect();
 
-        foreach ($itemMonths as $m) {
-            $month = (int) $m->month_id;
+            foreach ($itemMonths as $m) {
 
-            if ($month >= 1 && $month <= 12) {
-                $monthly[$month] += $m->amount;
+                $month = (int) $m->month_id;
+
+                if ($month >= 1 && $month <= 12) {
+                    $monthly[$month] += $m->amount;
+                }
             }
         }
+
+        $q1 = $monthly[1] + $monthly[2] + $monthly[3];
+        $q2 = $monthly[4] + $monthly[5] + $monthly[6];
+        $q3 = $monthly[7] + $monthly[8] + $monthly[9];
+        $q4 = $monthly[10] + $monthly[11] + $monthly[12];
+
+        $total = $q1 + $q2 + $q3 + $q4;
+
+        $report[] = [
+            'code' => $component->code,
+            'component' => $component,
+    'items' => $componentItems, // ADD THIS
+
+            'monthly' => $monthly,
+
+            'q1' => $q1,
+            'q2' => $q2,
+            'q3' => $q3,
+            'q4' => $q4,
+
+            'total' => $total
+        ];
     }
 
-    $q1 = $monthly[1] + $monthly[2] + $monthly[3];
-    $q2 = $monthly[4] + $monthly[5] + $monthly[6];
-    $q3 = $monthly[7] + $monthly[8] + $monthly[9];
-    $q4 = $monthly[10] + $monthly[11] + $monthly[12];
-
-    $total = $q1 + $q2 + $q3 + $q4;
-
-    $report[] = [
-        'code' => $component->code,
-        'category' => $component->procurement_id,
-        'category_name' => $component->code, // category label
-        'component' => $component,
-        'monthly' => $monthly,
-        'q1' => $q1,
-        'q2' => $q2,
-        'q3' => $q3,
-        'q4' => $q4,
-        'total' => $total,
-    ];
-}
     /*
     |--------------------------------------------------------------------------
-    | PDF
+    | PDF GENERATION
     |--------------------------------------------------------------------------
     */
-    $pdf = PDF::loadView('sip.pdf.wfp', [
+    $pdf = PDF::loadView('sip.pdf.ppmp', [
         'sip' => $sip,
         'report' => $report
     ]);
 
     $pdf->setPaper('legal', 'landscape');
 
-    return $pdf->stream('work-and-financial-plan.pdf');
+    return $pdf->stream('ppmp.pdf');
 }
 
 
