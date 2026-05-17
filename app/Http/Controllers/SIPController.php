@@ -588,6 +588,7 @@ public function generatePPMP($sip_id)
             'procurement_component_id',
             'item_name',
             'unit_of_measure as quantity_size',
+            'supporting_documents_description',
 
 
             'amount'
@@ -753,13 +754,13 @@ public function storeProcurementItem(Request $request, $procurement_component_id
 
         DB::commit();
 
-        return redirect()->back()->with('success', 'Procurement item saved successfully.');
+        return redirect()->back()->with('successMessage', 'Procurement item saved successfully.');
 
     } catch (\Exception $e) {
 
         DB::rollBack();
 
-        return redirect()->back()->with('error', 'Failed to save procurement item: ' . $e->getMessage());
+        return redirect()->back()->with('errorMessage', 'Failed to save procurement item: ' . $e->getMessage());
     }
 }
 

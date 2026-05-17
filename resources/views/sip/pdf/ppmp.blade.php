@@ -20,8 +20,7 @@
             border-collapse: collapse;
         }
 
-        th,
-        td {
+        th, td {
             border: 1px solid #000;
             padding: 4px;
             vertical-align: top;
@@ -37,26 +36,13 @@
             text-align: left;
         }
 
-        .center {
-            text-align: center;
-        }
-
-        .category {
-            background: #ffe600;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
         .header {
             text-align: center;
             margin-bottom: 10px;
             line-height: 1.2;
         }
 
-        .header h2,
-        .header h3,
-        .header h4,
-        .header p {
+        .header h2, .header h3, .header h4, .header p {
             margin: 0;
         }
 
@@ -69,183 +55,140 @@
 
 <body>
 
-    {{-- ================= HEADER ================= --}}
-    <div class="header">
+{{-- ================= HEADER ================= --}}
+<div class="header">
 
-        <p>Republic of the Philippines</p>
-        <h3>DEPARTMENT OF EDUCATION</h3>
-        <p>Region XI</p>
-        <h4>DIVISION OF DAVAO DEL NORTE</h4>
+    <p>Republic of the Philippines</p>
+    <h3>DEPARTMENT OF EDUCATION</h3>
+    <p>Region XI</p>
+    <h4>DIVISION OF DAVAO DEL NORTE</h4>
 
-        <h4>
-            {{ strtoupper($sip->school_name ?? 'SCHOOL NAME') }}
-        </h4>
+    <h4>{{ strtoupper($sip->school_name ?? 'SCHOOL NAME') }}</h4>
 
-        <br>
+    <br>
 
-        <h3>
-            PROJECT PROCUREMENT MANAGEMENT PLAN (PPMP)
-        </h3>
+    <h3>PROJECT PROCUREMENT MANAGEMENT PLAN (PPMP)</h3>
 
-        <p>
-            Fiscal Year {{ date('Y') }}
-        </p>
+    <p>Fiscal Year {{ date('Y') }}</p>
+</div>
 
-    </div>
+{{-- ================= TABLE ================= --}}
+<table>
 
-    {{-- ================= TABLE ================= --}}
-    <table>
+    <tr>
+        <th>General Description</th>
+        <th>Type</th>
+        <th>Quantity / Size</th>
+        <th>Mode of Procurement</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Source</th>
+        <th>Budget</th>
+        <th>Documents</th>
+        <th>Remarks</th>
+    </tr>
 
-        {{-- ================= TABLE HEADER ================= --}}
-        <tr>
+    {{-- INIT GRAND TOTAL --}}
+    @php
+        $grandTotal = 0;
+    @endphp
 
-            <th width="18%">
-                General Description and Objective of the Project to be Procured
-            </th>
+    {{-- ================= DATA ================= --}}
+    @foreach ($report as $group)
+        @foreach ($group['items'] as $item)
 
-            <th width="10%">
-                Type of Project
-            </th>
+            @php
+                $grandTotal += (float) $item->amount;
+            @endphp
 
-            <th width="8%">
-                Quantity / Size of Project
-            </th>
+            <tr>
 
-            <th width="10%">
-                Recommended Mode of Procurement
-            </th>
+                <td class="left">
+                    {{ $group['component']->project_description }}
+                </td>
 
-            <th width="8%">
-                Pre-Procurement Conference
-            </th>
+                <td>Goods</td>
 
-            <th width="8%">
-                Start of Procurement Activity
-            </th>
+                <td>
+                    {{ $item->quantity_size }} {{ $item->item_name }}
+                </td>
 
-            <th width="8%">
-                End of Procurement Activity
-            </th>
+                <td>
+                    {{ $group['component']->mode_of_procurement }}
+                </td>
 
-            <th width="10%">
-                Expected Delivery / Implementation Period
-            </th>
+                <td>
+                    {{ $group['component']->start_date }}
+                </td>
 
-            <th width="8%">
-                Source of Fund
-            </th>
+                <td>
+                    {{ $group['component']->end_date }}
+                </td>
 
-            <th width="8%">
-                Estimated Budget
-            </th>
+                <td>
+                    {{ $group['component']->source_of_fund }}
+                </td>
 
-            <th width="8%">
-                Attached Supporting Documents
-            </th>
+                <td>
+                    {{ number_format($item->amount, 2) }}
+                </td>
 
-            <th width="8%">
-                Remarks
-            </th>
+                <td>
+                    {{ $item->supporting_documents_description ?? '-' }}
+                </td>
 
-        </tr>
+                <td>
+                    {{ $group['component']->remarks }}
+                </td>
 
-        @php
-            $grandTotal = 0;
+            </tr>
 
-            $grouped = collect($report)->groupBy('code');
-        @endphp
-        @foreach ($report as $group)
-            @foreach ($group['items'] as $item)
-                <tr>
-
-                    <td>{{ $group['component']->project_description }}</td>
-
-                    <td>Goods</td>
-
-                    <td>{{ $item->quantity_size }} {{ $item->item_name }}</td>
-
-                    <td>{{ $group['component']->mode_of_procurement }}</td>
-
-                    <td>{{ $group['component']->start_date }}</td>
-
-                    <td>{{ $group['component']->end_date }}</td>
-                    <td></td>
-
-                    <td></td>
-
-                    <td>{{ $group['component']->source_of_fund }}</td>
-
-                    <td>{{ number_format($item->amount, 2) }}</td>
-                    <td></td>
-
-                    <td>{{ $group['component']->remarks }}</td>
-
-                </tr>
-            @endforeach
         @endforeach
+    @endforeach
 
-        {{-- ================= GRAND TOTAL ================= --}}
-        <tr class="total-row">
+    {{-- ================= GRAND TOTAL ================= --}}
+    <tr class="total-row">
 
-            <td colspan="9" class="left">
-                GRAND TOTAL
-            </td>
+        <td colspan="7" class="left">
+            GRAND TOTAL
+        </td>
 
-            <td>
-                {{ number_format($grandTotal, 2) }}
-            </td>
+        <td>
+            {{ number_format($grandTotal, 2) }}
+        </td>
 
-            <td></td>
-            <td></td>
+        <td></td>
+        <td></td>
 
-        </tr>
+    </tr>
 
-    </table>
+</table>
 
-    {{-- ================= SIGNATORIES ================= --}}
-    <br><br><br>
+<br><br><br>
 
-    <table style="width:100%; border:none;">
+{{-- ================= SIGNATORIES ================= --}}
+<table style="width:100%; border:none;">
 
-        <tr>
+    <tr>
 
-            {{-- PREPARED --}}
-            <td style="border:none; text-align:center; width:33%;">
+        <td style="border:none; text-align:center; width:33%;">
+            Prepared by:<br><br><br>
+            _______________________
+        </td>
 
-                <p style="margin-bottom:40px;">
-                    Prepared by:
-                </p>
+        <td style="border:none; text-align:center; width:33%;">
+            Reviewed by:<br><br><br>
+            _______________________
+        </td>
 
-                ___________________________
+        <td style="border:none; text-align:center; width:33%;">
+            Approved by:<br><br><br>
+            _______________________
+        </td>
 
-            </td>
+    </tr>
 
-            {{-- REVIEWED --}}
-            <td style="border:none; text-align:center; width:33%;">
-
-                <p style="margin-bottom:40px;">
-                    Reviewed by:
-                </p>
-
-                ___________________________
-
-            </td>
-
-            {{-- APPROVED --}}
-            <td style="border:none; text-align:center; width:33%;">
-
-                <p style="margin-bottom:40px;">
-                    Approved by:
-                </p>
-
-                ___________________________
-
-            </td>
-
-        </tr>
-
-    </table>
+</table>
 
 </body>
-
 </html>
