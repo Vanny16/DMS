@@ -166,64 +166,59 @@ public function procurementList($id)
     //     ->orderBy('procurements.procurement_id', 'desc')
     //     ->get();
 
+$procurements = DB::table('procurements')
+    ->join('codes', 'codes.code_id', '=', 'procurements.code_id')
+    ->join(
+        'procurement_components',
+        'procurement_components.procurement_id',
+        '=',
+        'procurements.procurement_id'
+    )
+    ->where('procurements.sip_id', $id)
+    ->select(
 
-            $procurements = DB::table('procurements')
-            ->join(
-                'codes',
-                'codes.code_id',
-                '=',
-                'procurements.code_id'
-            )
+        // PROCUREMENT
+        'procurements.procurement_id',
 
-            ->join(
-                'procurement_components',
-                'procurement_components.procurement_id',
-                '=',
-                'procurements.procurement_id'
-            )
+        // CODE
+        'codes.code',
+        'codes.code_id',
 
-            // ->leftJoin(
-            //     'procurement_items',
-            //     'procurement_items.procurement_component_id',
-            //     '=',
-            //     'procurement_components.procurement_component_id'
-            // )
+        // COMPONENT ID
+        'procurement_components.procurement_component_id',
 
-            ->where('procurements.sip_id', $id)
+        // CORE FIELDS (MATCH YOUR MODAL)
+        'procurement_components.description',
+        'procurement_components.end_user_unit',
+        'procurement_components.project_description',
+        'procurement_components.mode_of_procurement',
 
-            ->select(
+        // EARLY PROCUREMENT
+        'procurement_components.early_procurement',
+        'procurement_components.early_procurement_details',
 
-                // PROCUREMENT
-                'procurements.procurement_id',
-                'codes.code as category_title',
+        // DATES
+        'procurement_components.start_date',
+        'procurement_components.end_date',
 
-                // CODE
-                'codes.code',
+        // FUNDING
+        'procurement_components.source_of_fund',
+        'procurement_components.approved_budget',
 
-                // COMPONENT
-                'procurement_components.procurement_component_id',
+        // STRATEGY + REMARKS
+        'procurement_components.procurement_strategy',
+        'procurement_components.remarks',
+    )
+    ->orderBy('codes.code', 'asc')
+    ->orderBy('procurements.procurement_id', 'asc')
+    ->get();
 
-                'procurement_components.description as project_title',
-                'procurement_components.description',
+    $codes = DB::table('codes')
+    ->join('sub_categories','sub_categories.sub_category_id','codes.sub_category_id')
+    ->get();
 
-                'procurement_components.end_user_unit',
-                'procurement_components.project_description',
-                'procurement_components.mode_of_procurement',
-                'procurement_components.early_procurement',
-                'procurement_components.early_procurement_details',
-                'procurement_components.start_date',
-                'procurement_components.end_date',
-                'procurement_components.source_of_fund',
-                'procurement_components.approved_budget',
-                'procurement_components.procurement_strategy',
-                'procurement_components.remarks',
-            )
 
-            ->orderBy('codes.code', 'asc')
-            ->orderBy('procurements.procurement_id', 'asc')
-            ->get();
-
-    return view('sip.procurement_list', compact('sip', 'procurements'));
+    return view('sip.procurement_list', compact('sip', 'procurements','codes'));
 }
 public function procurementItems($procurement_id)
 {
@@ -589,8 +584,6 @@ public function generatePPMP($sip_id)
             'item_name',
             'unit_of_measure as quantity_size',
             'supporting_documents_description',
-
-
             'amount'
         )
         ->get()

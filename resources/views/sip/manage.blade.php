@@ -306,12 +306,12 @@
                                     <i class="fa fa-list"></i> Procurement List
                                 </a>
 
-                                 <a href="{{ route('sip.procurement.generate.wfp', $sip->sip_id) }}" target="_blank"
+                                <a href="{{ route('sip.procurement.generate.wfp', $sip->sip_id) }}" target="_blank"
                                     class="btn btn-outline-primary btn-modern mb-2">
                                     <i class="fa fa-file-pdf-o"></i> Generate WFP
                                 </a>
 
-                                 <a href="{{ route('sip.procurement.generate.ppmf', $sip->sip_id) }}" target="_blank"
+                                <a href="{{ route('sip.procurement.generate.ppmf', $sip->sip_id) }}" target="_blank"
                                     class="btn btn-outline-primary btn-modern mb-2">
                                     <i class="fa fa-file-pdf-o"></i> Generate PPMF
                                 </a>
@@ -504,310 +504,263 @@
     </div> --}}
 
 
-    <div class="modal fade"
-    id="createProcurementModal"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="createProcurementModalLabel"
-    aria-hidden="true">
+    <div class="modal fade" id="createProcurementModal" tabindex="-1" role="dialog"
+        aria-labelledby="createProcurementModalLabel" aria-hidden="true">
 
-    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-xl" role="document">
 
-        <form method="POST"
-            action="{{ route('sip.procurement.store', $sip->sip_id) }}">
+            <form method="POST" action="{{ route('sip.procurement.store', $sip->sip_id) }}">
 
-            @csrf
+                @csrf
 
-            <div class="modal-content"
-                style="border-radius:18px; overflow:hidden;">
+                <div class="modal-content" style="border-radius:18px; overflow:hidden;">
 
-                {{-- HEADER --}}
-                <div class="modal-header bg-success text-white">
+                    {{-- HEADER --}}
+                    <div class="modal-header bg-success text-white">
 
-                    <h5 class="modal-title font-weight-bold"
-                        id="createProcurementModalLabel">
+                        <h5 class="modal-title font-weight-bold" id="createProcurementModalLabel">
 
-                        <i class="fa fa-plus-circle"></i>
-                        Create Procurement
-                    </h5>
+                            <i class="fa fa-plus-circle"></i>
+                            Create Procurement
+                        </h5>
 
-                    <button type="button"
-                        class="close text-white"
-                        data-dismiss="modal">
+                        <button type="button" class="close text-white" data-dismiss="modal">
 
-                        <span>&times;</span>
-                    </button>
+                            <span>&times;</span>
+                        </button>
 
-                </div>
+                    </div>
 
-                {{-- BODY --}}
-                <div class="modal-body">
+                    {{-- BODY --}}
+                    <div class="modal-body">
 
-                    <div class="row">
+                        <div class="row">
 
-                        {{-- CODE --}}
-                        <div class="col-md-4">
-                            <div class="form-group">
+                            {{-- CODE --}}
+                            <div class="col-md-4">
+                                <div class="form-group">
 
-                                <label>
-                                    Code
-                                </label>
+                                    <label>
+                                        Code
+                                    </label>
 
-                                <select name="code_id"
-                                    class="form-control"
-                                    required>
+                                    <select name="code_id" class="form-control" required>
 
-                                    <option value="">
-                                        -- Select Code --
-                                    </option>
-
-                                    @foreach ($codes as $code)
-
-                                        <option value="{{ $code->code_id }}">
-
-                                            @if (isset($code->sub_category))
-                                                {{ $code->code }}
-                                                -
-                                                {{ $code->sub_category }}
-                                            @else
-                                                {{ $code->code }}
-                                            @endif
-
+                                        <option value="">
+                                            -- Select Code --
                                         </option>
 
-                                    @endforeach
+                                        @foreach ($codes as $code)
+                                            <option value="{{ $code->code_id }}">
 
-                                </select>
+                                                @if (isset($code->sub_category))
+                                                    {{ $code->code }}
+                                                    -
+                                                    {{ $code->sub_category }}
+                                                @else
+                                                    {{ $code->code }}
+                                                @endif
 
+                                            </option>
+                                        @endforeach
+
+                                    </select>
+
+                                </div>
                             </div>
+
+                            {{-- PROJECT TITLE --}}
+                            <div class="col-md-8">
+                                <div class="form-group">
+
+                                    <label>
+                                        Project Title
+                                    </label>
+
+                                    <textarea name="project_title" class="form-control" rows="2" required></textarea>
+
+                                </div>
+                            </div>
+
+                            {{-- END USER --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        End User / Implementing Unit
+                                    </label>
+
+                                    <input type="text" name="end_user_unit" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- MODE --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        Mode of Procurement
+                                    </label>
+
+                                    <input type="text" name="mode_of_procurement" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- DESCRIPTION --}}
+                            <div class="col-md-12">
+                                <div class="form-group">
+
+                                    <label>
+                                        General Description of the Project
+                                    </label>
+
+                                    <textarea name="project_description" class="form-control" rows="3"></textarea>
+
+                                </div>
+                            </div>
+
+                            {{-- EARLY PROCUREMENT --}}
+                            <div class="col-md-4">
+                                <div class="form-group">
+
+                                    <label>
+                                        Early Procurement Activity?
+                                    </label>
+
+                                    <select name="early_procurement" class="form-control">
+
+                                        <option value="No">
+                                            No
+                                        </option>
+
+                                        <option value="Yes">
+                                            Yes
+                                        </option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            {{-- EPA DETAILS --}}
+                            <div class="col-md-8">
+                                <div class="form-group">
+
+                                    <label>
+                                        Early Procurement Details
+                                    </label>
+
+                                    <input type="text" name="early_procurement_details" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- START MONTH --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        Start of Procurement Activity
+                                    </label>
+
+                                    <input type="month" name="start_date" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- END MONTH --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        End of Procurement Activity
+                                    </label>
+
+                                    <input type="month" name="end_date" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- SOURCE OF FUND --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        Source of Fund
+                                    </label>
+
+                                    <input type="text" name="source_of_fund" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- BUDGET --}}
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>
+                                        Approved Budget
+                                    </label>
+
+                                    <input type="number" step="0.01" name="approved_budget" class="form-control">
+
+                                </div>
+                            </div>
+
+                            {{-- STRATEGY --}}
+                            <div class="col-md-12">
+                                <div class="form-group">
+
+                                    <label>
+                                        Procurement Strategy / Tools
+                                    </label>
+
+                                    <textarea name="procurement_strategy" class="form-control" rows="2"></textarea>
+
+                                </div>
+                            </div>
+
+                            {{-- REMARKS --}}
+                            <div class="col-md-12">
+                                <div class="form-group">
+
+                                    <label>
+                                        Remarks
+                                    </label>
+
+                                    <textarea name="remarks" class="form-control" rows="2"></textarea>
+
+                                </div>
+                            </div>
+
                         </div>
 
-                        {{-- PROJECT TITLE --}}
-                        <div class="col-md-8">
-                            <div class="form-group">
+                    </div>
 
-                                <label>
-                                    Project Title
-                                </label>
+                    {{-- FOOTER --}}
+                    <div class="modal-footer">
 
-                                <textarea
-                                    name="project_title"
-                                    class="form-control"
-                                    rows="2"
-                                    required></textarea>
+                        <button type="button" class="btn btn-secondary btn-modern" data-dismiss="modal">
 
-                            </div>
-                        </div>
+                            Cancel
+                        </button>
 
-                        {{-- END USER --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
+                        <button type="submit" class="btn btn-success btn-modern">
 
-                                <label>
-                                    End User / Implementing Unit
-                                </label>
+                            <i class="fa fa-save"></i>
+                            Save Procurement
 
-                                <input type="text"
-                                    name="end_user_unit"
-                                    class="form-control">
-
-                            </div>
-                        </div>
-
-                        {{-- MODE --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-
-                                <label>
-                                    Mode of Procurement
-                                </label>
-
-                                <input type="text"
-                                    name="mode_of_procurement"
-                                    class="form-control">
-
-                            </div>
-                        </div>
-
-                        {{-- DESCRIPTION --}}
-                        <div class="col-md-12">
-                            <div class="form-group">
-
-                                <label>
-                                    General Description of the Project
-                                </label>
-
-                                <textarea
-                                    name="project_description"
-                                    class="form-control"
-                                    rows="3"></textarea>
-
-                            </div>
-                        </div>
-
-                        {{-- EARLY PROCUREMENT --}}
-                        <div class="col-md-4">
-                            <div class="form-group">
-
-                                <label>
-                                    Early Procurement Activity?
-                                </label>
-
-                                <select name="early_procurement"
-                                    class="form-control">
-
-                                    <option value="No">
-                                        No
-                                    </option>
-
-                                    <option value="Yes">
-                                        Yes
-                                    </option>
-
-                                </select>
-
-                            </div>
-                        </div>
-
-                        {{-- EPA DETAILS --}}
-                        <div class="col-md-8">
-                            <div class="form-group">
-
-                                <label>
-                                    Early Procurement Details
-                                </label>
-
-                                <input type="text"
-                                    name="early_procurement_details"
-                                    class="form-control">
-
-                            </div>
-                        </div>
-
-                      {{-- START MONTH --}}
-<div class="col-md-6">
-    <div class="form-group">
-
-        <label>
-            Start of Procurement Activity
-        </label>
-
-        <input type="month"
-            name="start_date"
-            class="form-control">
-
-    </div>
-</div>
-
-{{-- END MONTH --}}
-<div class="col-md-6">
-    <div class="form-group">
-
-        <label>
-            End of Procurement Activity
-        </label>
-
-        <input type="month"
-            name="end_date"
-            class="form-control">
-
-    </div>
-</div>
-
-                        {{-- SOURCE OF FUND --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-
-                                <label>
-                                    Source of Fund
-                                </label>
-
-                                <input type="text"
-                                    name="source_of_fund"
-                                    class="form-control">
-
-                            </div>
-                        </div>
-
-                        {{-- BUDGET --}}
-                        <div class="col-md-6">
-                            <div class="form-group">
-
-                                <label>
-                                    Approved Budget
-                                </label>
-
-                                <input type="number"
-                                    step="0.01"
-                                    name="approved_budget"
-                                    class="form-control">
-
-                            </div>
-                        </div>
-
-                        {{-- STRATEGY --}}
-                        <div class="col-md-12">
-                            <div class="form-group">
-
-                                <label>
-                                    Procurement Strategy / Tools
-                                </label>
-
-                                <textarea
-                                    name="procurement_strategy"
-                                    class="form-control"
-                                    rows="2"></textarea>
-
-                            </div>
-                        </div>
-
-                        {{-- REMARKS --}}
-                        <div class="col-md-12">
-                            <div class="form-group">
-
-                                <label>
-                                    Remarks
-                                </label>
-
-                                <textarea
-                                    name="remarks"
-                                    class="form-control"
-                                    rows="2"></textarea>
-
-                            </div>
-                        </div>
+                        </button>
 
                     </div>
 
                 </div>
 
-                {{-- FOOTER --}}
-                <div class="modal-footer">
+            </form>
 
-                    <button type="button"
-                        class="btn btn-secondary btn-modern"
-                        data-dismiss="modal">
-
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                        class="btn btn-success btn-modern">
-
-                        <i class="fa fa-save"></i>
-                        Save Procurement
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </form>
+        </div>
 
     </div>
-
-</div>
-
-
 @endsection
