@@ -244,6 +244,74 @@ public function procurementItems($procurement_id)
     return view('sip.procurement_items', compact('procurement', 'items'));
 }
 
+public function updateProcurement(Request $request, $id)
+{
+    $request->validate([
+        'code_id' => 'required|integer',
+        'project_title' => 'required|string',
+        'end_user_unit' => 'nullable|string',
+        'mode_of_procurement' => 'nullable|string',
+        'project_description' => 'nullable|string',
+        'early_procurement' => 'nullable|string',
+        'early_procurement_details' => 'nullable|string',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date',
+        'source_of_fund' => 'nullable|string',
+        'approved_budget' => 'nullable|numeric',
+        'procurement_strategy' => 'nullable|string',
+        'remarks' => 'nullable|string',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+
+        /**
+         * 1. UPDATE MAIN PROCUREMENT TABLE (CODE ID HERE)
+         */
+        DB::table('procurements')
+            ->where('procurement_id', $id)
+            ->update([
+                'code_id' => $request->code_id,
+                'updated_at' => now(),
+            ]);
+
+        /**
+         * 2. UPDATE COMPONENT TABLE
+         */
+        DB::table('procurement_components')
+            ->where('procurement_id', $id)
+            ->update([
+                'description' => $request->project_title,
+                'end_user_unit' => $request->end_user_unit,
+                'mode_of_procurement' => $request->mode_of_procurement,
+                'project_description' => $request->project_description,
+                'early_procurement' => $request->early_procurement,
+                'early_procurement_details' => $request->early_procurement_details,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'source_of_fund' => $request->source_of_fund,
+                'approved_budget' => $request->approved_budget,
+                'procurement_strategy' => $request->procurement_strategy,
+                'remarks' => $request->remarks,
+                'updated_at' => now(),
+            ]);
+
+        DB::commit();
+
+        return redirect()
+            ->back()
+            ->with('successMessage', 'Procurement updated successfully.');
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return redirect()
+            ->back()
+            ->with('errorMessage', 'Failed to update procurement: ' . $e->getMessage());
+    }
+}
 
     // public function generateAPP($sip_id)
     // {

@@ -90,7 +90,7 @@
     data-toggle="modal"
     data-target="#editProcurementModal"
 
-    {{-- data-url="{{ route('sip.procurement.update', $procurement->procurement_id) }}" --}}
+    data-url="{{ route('sip.procurement.update', $procurement->procurement_id) }}"
 
     data-code="{{ $procurement->code_id }}"
     data-title="{{ $procurement->description }}"

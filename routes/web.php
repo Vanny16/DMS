@@ -37,6 +37,8 @@ Route::post('/forgot-password', [App\Http\Controllers\LoginController::class, 'f
 Route::post('/sip/procurement/store/{id}', [SIPController::class, 'storeProcurement'])->name('sip.procurement.store');
 Route::get('/sip/procurement/list/{id}', [SIPController::class, 'procurementList'])->name('sip.procurement.list');
 Route::get('/sip/procurement/{procurement_id}/items', [SIPController::class, 'procurementItems'])->name('sip.procurement.items');
+Route::put('/sip/procurement/update/{id}', [SIPController::class, 'updateProcurement'])
+    ->name('sip.procurement.update');
 
 Route::post('/sip/procurement-component/{procurement_component_id}/items/store', [SIPController::class, 'storeProcurementItem'])->name('sip.procurement.items.store');
 Route::get('/sip/{sip_id}/procurement/generate/app', [SIPController::class, 'generateAPP'])->name('sip.procurement.generate.app');
